@@ -1,0 +1,13 @@
+env: load .env
+env: export EXPO_PUBLIC_API_URL
+Starting project at /Users/amit/Documents/rookie/gitcode/travelX/files/mobile
+Starting Metro Bundler
+The following packages should be updated for best compatibility with the installed expo version:
+  @expo/vector-icons@14.1.0 - expected version: ~14.0.4
+  react-native@0.76.3 - expected version: 0.76.9
+  react-native-screens@4.1.0 - expected version: ~4.4.0
+Your project may not work correctly until you install the expected versions of the packages.
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web Bundled 482ms node_modules/expo/AppEntry.js (788 modules)
+Web Bundled 29ms node_modules/expo/AppEntry.js (1 module)

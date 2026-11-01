@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "TripSplit",
+    "slug": "tripsplit",
+    "scheme": "tripsplit",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "com.example.tripsplit",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.example.tripsplit"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-notifications",
+      "expo-asset"
+    ]
+  }
+}

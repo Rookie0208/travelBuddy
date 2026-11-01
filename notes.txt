@@ -1,0 +1,13 @@
+// excel template format 
+#	Column	Details
+A	Date	Expense date (YYYY-MM-DD)
+B	Time Added	Full timestamp when expense was entered
+C	Title / Description	Expense name
+D	Category	FOOD, TRANSPORT, STAY, etc.
+E	Paid By	Who paid
+F	Total Amount	Full expense amount
+G	People Sharing	Count of members with non-zero share
+H	Split Type	EQUAL or CUSTOM
+I	Status	Active / DELETED
+J	Added By	Who logged it
+K+	Share: [Name]	Per-member share amount

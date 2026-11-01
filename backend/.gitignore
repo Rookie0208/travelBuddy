@@ -1,0 +1,9 @@
+target/
+.idea/
+*.iml
+.env
+*.json.key
+firebase-service-account.json
+../*.xlsx
+../*.zip
+../*.docx

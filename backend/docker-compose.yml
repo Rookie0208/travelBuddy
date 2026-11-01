@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: tripsplit
+      POSTGRES_USER: tripsplit
+      POSTGRES_PASSWORD: tripsplit
+    ports: ["${DB_PORT:-5434}:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tripsplit"]
+      interval: 5s
+      retries: 10
+  api:
+    build: .
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/tripsplit
+      DB_USER: tripsplit
+      DB_PASSWORD: tripsplit
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-dev-only-secret-change-me}
+      MAIL_ENABLED: "false"
+    ports: ["8080:8080"]
+volumes:
+  pgdata:

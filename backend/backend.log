@@ -1,0 +1,108 @@
+[INFO] Scanning for projects...
+Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml
+Progress (1): 234 BProgress (2): 234 B | 249 B                           Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml (249 B at 116 B/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml (234 B at 109 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml
+Progress (1): 255 B                   Downloaded from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml (255 B at 115 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml
+Progress (1): 243 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml (243 B at 107 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml
+Progress (1): 375 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml (375 B at 2.7 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml
+Progress (1): 394 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml (394 B at 3.3 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml
+Progress (1): 3.9 kBProgress (1): 4.0 kBProgress (1): 9.9 kBProgress (1): 10 kB Progress (2): 10 kB | 242 B                           Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml (10 kB at 84 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml (242 B at 1.8 kB/s)
+Progress (1): 3.7 kBProgress (1): 3.7 kBProgress (1): 9.4 kBProgress (1): 15 kB Progress (1): 19 kBProgress (1): 20 kB                   Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml (20 kB at 117 kB/s)
+Progress (1): 398 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml (398 B at 861 B/s)
+[INFO] 
+[INFO] ------------------< com.tripsplit:tripsplit-backend >-------------------
+[INFO] Building tripsplit-backend 0.1.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.5:run (default-cli) > test-compile @ tripsplit-backend >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ tripsplit-backend ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ tripsplit-backend ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ tripsplit-backend ---
+[INFO] skip non existing resourceDirectory /Users/amit/Documents/rookie/gitcode/travelX/files/backend/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ tripsplit-backend ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.3.5:run (default-cli) < test-compile @ tripsplit-backend <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.3.5:run (default-cli) @ tripsplit-backend ---
+[INFO] Attaching agents: []
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.5)
+
+2026-10-31T19:28:44.483+05:30  INFO 43409 --- [tripsplit] [           main] com.tripsplit.TripsplitApplication       : Starting TripsplitApplication using Java 18.0.2.1 with PID 43409 (/Users/amit/Documents/rookie/gitcode/travelX/files/backend/target/classes started by amit in /Users/amit/Documents/rookie/gitcode/travelX/files/backend)
+2026-10-31T19:28:44.487+05:30  INFO 43409 --- [tripsplit] [           main] com.tripsplit.TripsplitApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-10-31T19:28:45.432+05:30  INFO 43409 --- [tripsplit] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-31T19:28:45.494+05:30  INFO 43409 --- [tripsplit] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 58 ms. Found 11 JPA repository interfaces.
+2026-10-31T19:28:46.077+05:30  INFO 43409 --- [tripsplit] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-10-31T19:28:46.086+05:30  INFO 43409 --- [tripsplit] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-31T19:28:46.086+05:30  INFO 43409 --- [tripsplit] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-10-31T19:28:46.174+05:30  INFO 43409 --- [tripsplit] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-10-31T19:28:46.175+05:30  INFO 43409 --- [tripsplit] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1641 ms
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-10-31T19:28:46.491+05:30  INFO 43409 --- [tripsplit] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-31T19:28:46.689+05:30  INFO 43409 --- [tripsplit] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@28ce75ec
+2026-10-31T19:28:46.691+05:30  INFO 43409 --- [tripsplit] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-31T19:28:46.731+05:30  INFO 43409 --- [tripsplit] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:5434/tripsplit (PostgreSQL 16.12)
+2026-10-31T19:28:46.784+05:30  INFO 43409 --- [tripsplit] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 1 migration (execution time 00:00.026s)
+2026-10-31T19:28:46.812+05:30  INFO 43409 --- [tripsplit] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 1
+2026-10-31T19:28:46.814+05:30  INFO 43409 --- [tripsplit] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-10-31T19:28:46.911+05:30  INFO 43409 --- [tripsplit] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-31T19:28:46.940+05:30  INFO 43409 --- [tripsplit] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-10-31T19:28:46.959+05:30  INFO 43409 --- [tripsplit] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-10-31T19:28:47.125+05:30  INFO 43409 --- [tripsplit] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-31T19:28:47.883+05:30  INFO 43409 --- [tripsplit] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-31T19:28:47.886+05:30  INFO 43409 --- [tripsplit] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-31T19:28:48.333+05:30  INFO 43409 --- [tripsplit] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-10-31T19:28:48.784+05:30  WARN 43409 --- [tripsplit] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 64745d71-c354-42c3-8e1c-272b1c3caee9
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-10-31T19:28:48.788+05:30  INFO 43409 --- [tripsplit] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-10-31T19:28:49.086+05:30  INFO 43409 --- [tripsplit] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-31T19:28:49.516+05:30  INFO 43409 --- [tripsplit] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-10-31T19:28:49.535+05:30  INFO 43409 --- [tripsplit] [           main] com.tripsplit.TripsplitApplication       : Started TripsplitApplication in 5.441 seconds (process running for 5.992)
+2026-10-31T19:28:50.435+05:30  INFO 43409 --- [tripsplit] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-31T19:28:50.435+05:30  INFO 43409 --- [tripsplit] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-31T19:28:50.439+05:30  INFO 43409 --- [tripsplit] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  02:17 min
+[INFO] Finished at: 2026-10-31T19:30:53+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.3.5:run (default-cli) on project tripsplit-backend: Process terminated with exit code: 137 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
