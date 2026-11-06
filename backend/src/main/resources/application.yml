@@ -48,5 +48,6 @@ app:
     enabled: ${MAIL_ENABLED:false}     # false = print verification code in the server log (dev)
     from: ${MAIL_FROM:no-reply@tripsplit.app}
   fcm:
-    enabled: ${FCM_ENABLED:false}      # true = send real push via Firebase
-    credentials-path: ${FCM_CREDENTIALS_PATH:}
+    # Set to true to enable FCM push notifications; false to keep disabled (logs only).
+    enabled: ${FCM_ENABLED:false}
+    credentials-path: ${FCM_CREDENTIALS_PATH:classpath:firebase-service-account.json}

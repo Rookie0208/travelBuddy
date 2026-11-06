@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "46750539119",
+    "project_id": "travel-x-backend",
+    "storage_bucket": "travel-x-backend.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:46750539119:android:24d502cfd31f36e58f5c9a",
+        "android_client_info": {
+          "package_name": "com.example.tripsplit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoBpEBhEuFZicDQ1K0HsLDFUJ9MrkVmDU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,3 +4,4 @@ dist/
 .env
 google-services.json
 GoogleService-Info.plist
+.log

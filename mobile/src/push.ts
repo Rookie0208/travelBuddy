@@ -2,9 +2,16 @@ import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { QueryClient } from '@tanstack/react-query';
 import * as endpoints from './api/endpoints';
+import { FEATURES } from './config/features';
 
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({ shouldShowAlert: true, shouldPlaySound: false, shouldSetBadge: false }),
+  handleNotification: async () => ({
+    shouldShowAlert: FEATURES.ENABLE_PUSH_NOTIFICATIONS,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+    shouldShowBanner: FEATURES.ENABLE_PUSH_NOTIFICATIONS,
+    shouldShowList: FEATURES.ENABLE_PUSH_NOTIFICATIONS,
+  }),
 });
 
 /**
@@ -13,6 +20,10 @@ Notifications.setNotificationHandler({
  * On iOS the token is an APNs token, which needs extra Firebase setup first (see README), so we skip it for now.
  */
 export async function registerForPush(): Promise<void> {
+  if (!FEATURES.ENABLE_PUSH_NOTIFICATIONS) {
+    // Push notifications are currently disabled via feature flag
+    return;
+  }
   try {
     if (Platform.OS !== 'android') return;
     const perm = await Notifications.getPermissionsAsync();
@@ -28,6 +39,9 @@ export async function registerForPush(): Promise<void> {
 
 /** Refresh data when a push arrives; open the trip when it is tapped. */
 export function listenToPush(qc: QueryClient, openTrip: (tripId: string) => void): () => void {
+  if (!FEATURES.ENABLE_PUSH_NOTIFICATIONS) {
+    return () => {};
+  }
   const received = Notifications.addNotificationReceivedListener(() => { qc.invalidateQueries(); });
   const tapped = Notifications.addNotificationResponseReceivedListener((resp) => {
     qc.invalidateQueries();

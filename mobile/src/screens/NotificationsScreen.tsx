@@ -27,7 +27,7 @@ export default function NotificationsScreen({ navigation }: Props<'Notifications
       data={q.data.items}
       keyExtractor={(n) => n.id}
       contentContainerStyle={{ padding: space.lg, flexGrow: 1 }}
-      refreshControl={<RefreshControl refreshing={q.isRefetching} onRefresh={() => q.refetch()} />}
+      refreshControl={<RefreshControl refreshing={q.isRefetching} onRefresh={() => { q.refetch(); }} />}
       ListEmptyComponent={<EmptyState title="No notifications yet" hint="Join requests, new expenses and repayments will show up here." />}
       renderItem={({ item }) => (
         <Pressable onPress={() => { if (item.tripId) navigation.navigate('Trip', { tripId: item.tripId }); }}>

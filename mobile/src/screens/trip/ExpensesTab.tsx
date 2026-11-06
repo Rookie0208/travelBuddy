@@ -32,7 +32,7 @@ export default function ExpensesTab({ trip, navigation }: {
         data={items}
         keyExtractor={(e) => e.id}
         contentContainerStyle={{ padding: space.lg, flexGrow: 1 }}
-        refreshControl={<RefreshControl refreshing={q.isRefetching && !q.isFetchingNextPage} onRefresh={() => q.refetch()} />}
+        refreshControl={<RefreshControl refreshing={q.isRefetching && !q.isFetchingNextPage} onRefresh={() => { q.refetch(); }} />}
         onEndReached={() => { if (q.hasNextPage && !q.isFetchingNextPage) q.fetchNextPage(); }}
         ListEmptyComponent={<EmptyState title="No expenses yet" hint="Add the first one: amount, who paid, and who shares it. The app splits it for you." />}
         renderItem={({ item }) => (
@@ -50,7 +50,7 @@ export default function ExpensesTab({ trip, navigation }: {
             </Card>
           </Pressable>
         )}
-        ListFooterComponent={q.isFetchingNextPage ? <Loading /> : null}
+        ListFooterComponent={q.isFetchingNextPage ? <Loading /> : undefined}
       />
       {settled ? (
         <View style={{ padding: space.lg }}>

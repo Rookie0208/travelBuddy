@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -30,18 +32,28 @@ public class FcmPushService implements PushService {
 
     private final DeviceTokenRepository devices;
     private final String credentialsPath;
+    private final ResourceLoader resourceLoader;
 
-    public FcmPushService(DeviceTokenRepository devices, @Value("${app.fcm.credentials-path}") String credentialsPath) {
+    public FcmPushService(DeviceTokenRepository devices,
+                          @Value("${app.fcm.credentials-path:classpath:firebase-service-account.json}") String credentialsPath,
+                          ResourceLoader resourceLoader) {
         this.devices = devices;
         this.credentialsPath = credentialsPath;
+        this.resourceLoader = resourceLoader;
     }
 
     @PostConstruct
     void init() throws IOException {
         if (FirebaseApp.getApps().isEmpty()) {
-            try (InputStream in = new FileInputStream(credentialsPath)) {
+            Resource resource = resourceLoader.getResource(credentialsPath);
+            if (!resource.exists()) {
+                log.warn("FCM credentials resource not found at: {}. FCM will not be initialized.", credentialsPath);
+                return;
+            }
+            try (InputStream in = resource.getInputStream()) {
                 FirebaseApp.initializeApp(FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(in)).build());
+                log.info("Firebase Cloud Messaging initialized successfully with credentials from: {}", credentialsPath);
             }
         }
     }

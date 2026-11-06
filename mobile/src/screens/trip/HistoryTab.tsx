@@ -84,7 +84,7 @@ export default function HistoryTab({ trip }: { trip: TripDetail }) {
         data={q.data.items}
         keyExtractor={(a) => a.id}
         contentContainerStyle={{ padding: space.lg, flexGrow: 1 }}
-        refreshControl={<RefreshControl refreshing={q.isRefetching} onRefresh={() => q.refetch()} />}
+        refreshControl={<RefreshControl refreshing={q.isRefetching} onRefresh={() => { q.refetch(); }} />}
         ListEmptyComponent={<EmptyState title="Nothing here yet" hint="Every expense, edit and repayment shows up here for everyone in the trip." />}
         renderItem={({ item }) => <ActivityRow a={item} />}
       />
