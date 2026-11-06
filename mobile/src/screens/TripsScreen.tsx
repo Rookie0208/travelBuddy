@@ -4,6 +4,7 @@ import {
   FlatList,
   Pressable,
   RefreshControl,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -136,9 +137,8 @@ function FAB({ onNewTrip, onJoin }: { onNewTrip: () => void; onJoin: () => void 
   };
 
   const rotateInterp = rotate.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '45deg'] });
-  // Options slide up from bottom; when closed they are translated down (hidden behind FAB)
-  const translateNew = slideNew.interpolate({ inputRange: [0, 1], outputRange: [80, 0] });
-  const translateJoin = slideJoin.interpolate({ inputRange: [0, 1], outputRange: [60, 0] });
+  const translateNew = slideNew.interpolate({ inputRange: [0, 1], outputRange: [20, 0] });
+  const translateJoin = slideJoin.interpolate({ inputRange: [0, 1], outputRange: [15, 0] });
 
   const FabOption = ({
     label,
@@ -165,7 +165,6 @@ function FAB({ onNewTrip, onJoin }: { onNewTrip: () => void; onJoin: () => void 
           marginBottom: space.sm,
         },
         { transform: [{ translateY }], opacity },
-        { pointerEvents: open ? 'auto' : 'none' },
       ]}
     >
       <View
@@ -199,60 +198,72 @@ function FAB({ onNewTrip, onJoin }: { onNewTrip: () => void; onJoin: () => void 
   );
 
   return (
-    <View style={{ position: 'absolute', right: space.lg, bottom: space.xl + 8, alignItems: 'flex-end' }}>
-      {/* Backdrop */}
+    <>
+      {/* Dimmed backdrop covering only the screen - zero overflow */}
       {open && (
         <Pressable
           onPress={toggle}
-          style={{
-            position: 'absolute',
-            top: -1000,
-            left: -1000,
-            right: -1000,
-            bottom: -1000,
-          }}
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 90 },
+          ]}
         />
       )}
 
-      {/* Option: New Trip */}
-      <FabOption
-        label="New trip"
-        icon="add-circle-outline"
-        translateY={translateNew}
-        opacity={fadeNew}
-        onPress={onNewTrip}
-        color={colors.primary}
-      />
-
-      {/* Option: Join trip */}
-      <FabOption
-        label="Join with code"
-        icon="key-outline"
-        translateY={translateJoin}
-        opacity={fadeJoin}
-        onPress={onJoin}
-        color={colors.accent}
-      />
-
-      {/* Main FAB */}
-      <TouchableOpacity
-        onPress={toggle}
-        activeOpacity={0.9}
+      <View
         style={{
-          width: 56,
-          height: 56,
-          borderRadius: radius.full,
-          backgroundColor: colors.primary,
-          alignItems: 'center',
-          justifyContent: 'center',
-          ...shadows.md,
+          position: 'absolute',
+          right: space.lg,
+          bottom: space.xl + 8,
+          alignItems: 'flex-end',
+          zIndex: 100,
         }}
+        pointerEvents="box-none"
       >
-        <Animated.View style={{ transform: [{ rotate: rotateInterp }] }}>
-          <Ionicons name="add" size={28} color="#fff" />
-        </Animated.View>
-      </TouchableOpacity>
-    </View>
+        {/* Option: New Trip */}
+        {open && (
+          <FabOption
+            label="New trip"
+            icon="add-circle-outline"
+            translateY={translateNew}
+            opacity={fadeNew}
+            onPress={onNewTrip}
+            color={colors.primary}
+          />
+        )}
+
+        {/* Option: Join trip */}
+        {open && (
+          <FabOption
+            label="Join with code"
+            icon="key-outline"
+            translateY={translateJoin}
+            opacity={fadeJoin}
+            onPress={onJoin}
+            color={colors.accent}
+          />
+        )}
+
+        {/* Main FAB */}
+        <TouchableOpacity
+          onPress={toggle}
+          activeOpacity={0.9}
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: radius.full,
+            backgroundColor: colors.primary,
+            alignItems: 'center',
+            justifyContent: 'center',
+            ...shadows.md,
+          }}
+        >
+          <Animated.View style={{ transform: [{ rotate: rotateInterp }] }}>
+            <Ionicons name="add" size={28} color="#fff" />
+          </Animated.View>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 }
 

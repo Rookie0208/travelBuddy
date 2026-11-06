@@ -55,8 +55,7 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
       {feedback ? (
         <View style={styles.feedbackBanner}>
           <Ionicons name="checkmark-circle" size={18} color={colors.good} />
@@ -163,12 +162,10 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
           </View>
           <Ionicons name="chevron-forward" size={18} color={colors.subtle} />
         </Pressable>
-      </Card>
-      </ScrollView>
 
-      {/* ── Log Out — pinned to very bottom of screen ───────────────── */}
-      <View style={styles.logoutBar}>
         <View style={styles.divider} />
+
+        {/* Log Out Button directly below Join with 6-digit code */}
         <Pressable
           style={({ pressed }) => [styles.navItem, pressed && styles.pressedItem]}
           onPress={() => setLogoutOpen(true)}
@@ -180,8 +177,9 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
             <Text style={[type.subheading, { color: colors.danger }]}>Log Out</Text>
             <Text style={type.small}>Sign out of this device</Text>
           </View>
+          <Ionicons name="chevron-forward" size={18} color={colors.subtle} />
         </Pressable>
-      </View>
+      </Card>
 
       {/* Edit Name Modal */}
       <PromptModal
@@ -209,14 +207,14 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
         onCancel={() => setLogoutOpen(false)}
         onConfirm={handleLogout}
       />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     padding: space.lg,
-    paddingBottom: 12,
+    paddingBottom: 48,
     backgroundColor: colors.bg,
   },
   feedbackBanner: {
@@ -277,11 +275,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: '700',
-  },
-  logoutBar: {
-    backgroundColor: colors.bg,
-    borderTopWidth: 1,
-    borderTopColor: colors.lineLight,
   },
 });
 

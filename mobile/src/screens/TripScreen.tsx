@@ -300,11 +300,16 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
   }
 
   const pending = data.joinRequests.length;
-  const tabs: { key: TabKey; label: string; badge?: number }[] = [
-    { key: 'expenses', label: 'Expenses' },
-    { key: 'balances', label: 'Balances' },
-    { key: 'history', label: 'History' },
-    { key: 'members', label: 'People', badge: pending },
+  const tabs: {
+    key: TabKey;
+    icon: React.ComponentProps<typeof Ionicons>['name'];
+    activeIcon: React.ComponentProps<typeof Ionicons>['name'];
+    badge?: number;
+  }[] = [
+    { key: 'expenses', icon: 'receipt-outline', activeIcon: 'receipt' },
+    { key: 'balances', icon: 'scale-outline', activeIcon: 'scale' },
+    { key: 'members', icon: 'people-outline', activeIcon: 'people', badge: pending },
+    { key: 'history', icon: 'time-outline', activeIcon: 'time' },
   ];
 
   return (
@@ -313,15 +318,30 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      {/* ── Tab bar ─────────────────────────────────────────────── */}
+      {/* ── Tab content ─────────────────────────────────────────── */}
+      <View style={{ flex: 1 }}>
+        {tab === 'expenses' && <ExpensesTab trip={data} navigation={navigation} />}
+        {tab === 'balances' && <BalancesTab trip={data} />}
+        {tab === 'members' && <MembersTab trip={data} navigation={navigation} />}
+        {tab === 'history' && <HistoryTab trip={data} />}
+      </View>
+
+      {/* ── Bottom Navigation Bar with icons ───────────────────────── */}
       <View
         style={{
           flexDirection: 'row',
-          marginHorizontal: space.lg,
-          marginBottom: space.sm,
-          backgroundColor: '#E9E4D8',
-          borderRadius: 12,
-          padding: 3,
+          backgroundColor: colors.card,
+          borderTopWidth: 1,
+          borderTopColor: colors.lineLight,
+          paddingVertical: 8,
+          paddingBottom: Platform.OS === 'ios' ? 24 : 10,
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 6,
+          elevation: 6,
         }}
       >
         {tabs.map(t => {
@@ -331,31 +351,52 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
               key={t.key}
               onPress={() => setTab(t.key)}
               style={{
-                flex: 1, paddingVertical: 9, borderRadius: 10,
+                flex: 1,
                 alignItems: 'center',
-                backgroundColor: on ? '#fff' : 'transparent',
+                justifyContent: 'center',
+                paddingVertical: 4,
               }}
+              hitSlop={8}
             >
-              <Text
+              <View
                 style={{
-                  fontSize: 13.5,
-                  fontWeight: on ? '700' : '500',
-                  color: on ? colors.primaryDark : colors.muted,
+                  width: 52,
+                  height: 36,
+                  borderRadius: radius.full,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: on ? colors.primarySoft : 'transparent',
                 }}
               >
-                {t.label}{t.badge ? `  (${t.badge})` : ''}
-              </Text>
+                <Ionicons
+                  name={on ? t.activeIcon : t.icon}
+                  size={24}
+                  color={on ? colors.primary : colors.muted}
+                />
+                {t.badge && t.badge > 0 ? (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: 2,
+                      right: 8,
+                      backgroundColor: colors.danger,
+                      borderRadius: 8,
+                      minWidth: 16,
+                      height: 16,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingHorizontal: 3,
+                    }}
+                  >
+                    <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>
+                      {t.badge > 9 ? '9+' : t.badge}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
             </Pressable>
           );
         })}
-      </View>
-
-      {/* ── Tab content ─────────────────────────────────────────── */}
-      <View style={{ flex: 1 }}>
-        {tab === 'expenses' && <ExpensesTab trip={data} navigation={navigation} />}
-        {tab === 'balances' && <BalancesTab trip={data} />}
-        {tab === 'history' && <HistoryTab trip={data} />}
-        {tab === 'members' && <MembersTab trip={data} navigation={navigation} />}
       </View>
 
       {/* ── File actions sheet ───────────────────────────────────── */}

@@ -13,10 +13,21 @@ function resolveDefaultHost(): string {
   return Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
 }
 
-const raw = process.env.EXPO_PUBLIC_API_URL?.trim();
-const normalized = raw ? raw.replace(/\/+$/, '').replace(/\/api\/v1$/, '') : `http://${resolveDefaultHost()}:8080`;
+function getApiUrl(): string {
+  const raw = process.env.EXPO_PUBLIC_API_URL?.trim();
+  if (Platform.OS === 'web' && typeof window !== 'undefined') {
+    // If accessing web locally on the same machine, localhost:8080 is always reliable
+    if (window.location?.hostname === 'localhost' || window.location?.hostname === '127.0.0.1') {
+      return 'http://localhost:8080';
+    }
+  }
+  if (raw) {
+    return raw.replace(/\/+$/, '').replace(/\/api\/v1$/, '');
+  }
+  return `http://${resolveDefaultHost()}:8080`;
+}
 
-export const API_URL: string = normalized;
+export const API_URL: string = getApiUrl();
 export const INVITE_SCHEME = 'tripsplit://join/';
 export { FEATURES } from './config/features';
 
