@@ -44,7 +44,7 @@ export const tokenStore = {
 let onAuthLost: (() => void) | null = null;
 export function setAuthLostHandler(fn: () => void) { onAuthLost = fn; }
 
-export const api = axios.create({ baseURL: `${API_URL}/api/v1`, timeout: 20000 });
+export const api = axios.create({ baseURL: `${API_URL}/api/v1`, timeout: 60000 });
 
 api.interceptors.request.use(async (config) => {
   const token = await tokenStore.getAccess();
@@ -59,7 +59,7 @@ async function doRefresh(): Promise<string | null> {
   if (!refresh) return null;
   try {
     // plain axios on purpose: must not go through the interceptors above
-    const res = await axios.post<AuthResponse>(`${API_URL}/api/v1/auth/refresh`, { refreshToken: refresh }, { timeout: 20000 });
+    const res = await axios.post<AuthResponse>(`${API_URL}/api/v1/auth/refresh`, { refreshToken: refresh }, { timeout: 60000 });
     await tokenStore.save(res.data.accessToken, res.data.refreshToken);
     return res.data.accessToken;
   } catch (e) {
