@@ -260,15 +260,40 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
     navigation.setOptions({
       headerTitle: () =>
         data ? (
-          <View style={{ alignItems: 'flex-start' }}>
+          <View style={{ alignItems: 'flex-start', justifyContent: 'center' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              {/* Trip Invite Code BEFORE the trip name */}
+              {data.inviteCode ? (
+                <View
+                  style={{
+                    backgroundColor: colors.primarySoft,
+                    paddingHorizontal: 6,
+                    paddingVertical: 1.5,
+                    borderRadius: radius.sm,
+                    borderWidth: 1,
+                    borderColor: 'rgba(13, 56, 42, 0.15)',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 11,
+                      fontWeight: '800',
+                      color: colors.primaryDark,
+                      letterSpacing: 0.8,
+                    }}
+                  >
+                    {data.inviteCode}
+                  </Text>
+                </View>
+              ) : null}
+
               <Text
                 style={{
-                  fontSize: 17,
+                  fontSize: 16,
                   fontWeight: '800',
                   color: colors.ink,
                   letterSpacing: -0.3,
-                  maxWidth: 160,
+                  maxWidth: 130,
                 }}
                 numberOfLines={1}
               >
@@ -283,17 +308,27 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
                 }}
               />
             </View>
-            <Text
-              style={{ fontSize: 11, color: colors.muted, fontWeight: '600' }}
-              numberOfLines={1}
-            >
-              {data.destination ? `${data.destination} • ` : ''}Code: {data.inviteCode}
-            </Text>
+            {data.destination ? (
+              <Text
+                style={{ fontSize: 11, color: colors.muted, fontWeight: '500', marginTop: 1, maxWidth: 180 }}
+                numberOfLines={1}
+              >
+                {data.destination}
+              </Text>
+            ) : null}
           </View>
         ) : null,
       headerRight: () =>
         data ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+              marginRight: Platform.OS === 'ios' ? space.sm : space.md,
+              paddingRight: Platform.OS === 'web' ? 4 : 0,
+            }}
+          >
             {/* Add person (owner only) */}
             {isOwner ? (
               <Pressable
@@ -316,27 +351,24 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
               </Pressable>
             ) : null}
 
-            {/* Premium Excel button with badge and icon */}
+            {/* Excel button (icon only) with proper right spacing */}
             <Pressable
               onPress={() => setFileSheetOpen(true)}
               accessibilityLabel="Excel Export and Import"
+              hitSlop={8}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 5,
+                width: 36,
+                height: 36,
+                borderRadius: 18,
                 backgroundColor: '#0A1813',
-                paddingHorizontal: 11,
-                paddingVertical: 7,
-                borderRadius: radius.full,
+                alignItems: 'center',
+                justifyContent: 'center',
                 borderWidth: 1.5,
                 borderColor: '#1D3B2E',
                 ...shadows.sm,
               }}
             >
-              <Ionicons name="document-text" size={13} color="#D4FF00" />
-              <Text style={{ color: '#D4FF00', fontSize: 11, fontWeight: '800', letterSpacing: 0.5 }}>
-                EXCEL
-              </Text>
+              <Ionicons name="document-text" size={18} color="#D4FF00" />
             </Pressable>
           </View>
         ) : null,

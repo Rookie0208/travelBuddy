@@ -411,9 +411,9 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
                 <Text style={styles.heroBalanceAmount}>{formatPaise(totalSpent, 'INR')}</Text>
               </View>
 
-              {/* Cardholder & Masked digits */}
+              {/* Cardholder & Masked digits (Email only on Profile card) */}
               <View style={styles.cardMidDetails}>
-                <View>
+                <View style={{ flex: 1, paddingRight: space.sm }}>
                   <Text style={styles.cardHolderLabel}>CARDHOLDER</Text>
                   <Text style={styles.cardHolderName} numberOfLines={1}>
                     {(user?.name || 'EXPLORER').toUpperCase()}
@@ -529,7 +529,7 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
             )}
           </>
         ) : (
-          /* Expense Stats View with "Upcoming Module" Tag */
+          /* Expense Stats View with "Upcoming Module" Tag - Simpler, clean & pleasant UI */
           <View style={styles.statsContainer}>
             <View style={styles.upcomingHeroCard}>
               <View style={styles.upcomingBadgeRow}>
@@ -537,50 +537,50 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
                   <View style={styles.voltPillDot} />
                   <Text style={styles.upcomingBadgeText}>UPCOMING MODULE</Text>
                 </View>
-                <Ionicons name="sparkles" size={18} color="#D4FF00" />
+                <Ionicons name="sparkles-outline" size={18} color={colors.primary} />
               </View>
 
-              <Text style={styles.upcomingTitle}>Total Expense Tracking & Analytics</Text>
+              <Text style={styles.upcomingTitle}>Spending Analytics & Insights</Text>
               <Text style={styles.upcomingSubtitle}>
-                Cross-trip spending intelligence, category breakdowns, visual cashflow timelines, and budget insights are currently in active development.
+                Clear breakdowns, category charts, and budget trends across all your trips will appear here soon.
               </Text>
 
               <View style={styles.upcomingDivider} />
 
               <View style={styles.upcomingFeatureList}>
                 <View style={styles.upcomingFeatureItem}>
-                  <View style={[styles.upcomingFeatureIconCircle, { backgroundColor: 'rgba(212, 255, 0, 0.12)' }]}>
-                    <Ionicons name="pie-chart-outline" size={18} color="#D4FF00" />
+                  <View style={[styles.upcomingFeatureIconCircle, { backgroundColor: '#F0FDF4' }]}>
+                    <Ionicons name="pie-chart-outline" size={18} color="#16A34A" />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.upcomingFeatureTitle}>Category Spend Distribution</Text>
-                    <Text style={styles.upcomingFeatureDesc}>Automated tagging for food, stay, flights, fuel, and entertainment across all trips.</Text>
+                    <Text style={styles.upcomingFeatureTitle}>Category Spend</Text>
+                    <Text style={styles.upcomingFeatureDesc}>Automated tagging for food, stays, flights, and activities.</Text>
                   </View>
                 </View>
 
                 <View style={styles.upcomingFeatureItem}>
-                  <View style={[styles.upcomingFeatureIconCircle, { backgroundColor: 'rgba(56, 189, 248, 0.12)' }]}>
-                    <Ionicons name="trending-up-outline" size={18} color="#38BDF8" />
+                  <View style={[styles.upcomingFeatureIconCircle, { backgroundColor: '#EFF6FF' }]}>
+                    <Ionicons name="trending-up-outline" size={18} color="#2563EB" />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.upcomingFeatureTitle}>Debt & Payback Velocity</Text>
-                    <Text style={styles.upcomingFeatureDesc}>Track pending dues, who settles quickest, and net balance across your whole friend circle.</Text>
+                    <Text style={styles.upcomingFeatureTitle}>Balances & Trends</Text>
+                    <Text style={styles.upcomingFeatureDesc}>Track pending dues and overall debt settlement flows.</Text>
                   </View>
                 </View>
 
                 <View style={styles.upcomingFeatureItem}>
-                  <View style={[styles.upcomingFeatureIconCircle, { backgroundColor: 'rgba(244, 63, 94, 0.12)' }]}>
-                    <Ionicons name="receipt-outline" size={18} color="#F43F5E" />
+                  <View style={[styles.upcomingFeatureIconCircle, { backgroundColor: '#FFF7ED' }]}>
+                    <Ionicons name="document-text-outline" size={18} color="#EA580C" />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={styles.upcomingFeatureTitle}>Exportable Tax & Audit Reports</Text>
-                    <Text style={styles.upcomingFeatureDesc}>One-click consolidated spreadsheets and PDF expense reports for company reimbursements.</Text>
+                    <Text style={styles.upcomingFeatureTitle}>Reports & Export</Text>
+                    <Text style={styles.upcomingFeatureDesc}>Export clean PDF and Excel summaries for reimbursements.</Text>
                   </View>
                 </View>
               </View>
 
               <View style={styles.upcomingCardFooter}>
-                <Text style={styles.upcomingCardFooterText}>COMING SOON IN V2.1</Text>
+                <Text style={styles.upcomingCardFooterText}>Coming soon in v2.1</Text>
               </View>
             </View>
           </View>
@@ -1126,16 +1126,12 @@ const styles = StyleSheet.create({
     marginTop: space.sm,
   },
   upcomingHeroCard: {
-    backgroundColor: '#0A1813',
+    backgroundColor: colors.card,
     borderRadius: radius.xl,
     padding: space.xl,
-    borderWidth: 1.5,
-    borderColor: '#1D3B2E',
-    shadowColor: '#071610',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.24,
-    shadowRadius: 20,
-    elevation: 6,
+    borderWidth: 1,
+    borderColor: colors.lineLight,
+    ...shadows.sm,
   },
   upcomingBadgeRow: {
     flexDirection: 'row',
@@ -1147,34 +1143,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(212, 255, 0, 0.14)',
+    backgroundColor: colors.primarySoft,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: radius.full,
-    borderWidth: 1,
-    borderColor: 'rgba(212, 255, 0, 0.35)',
   },
   upcomingBadgeText: {
-    color: '#D4FF00',
+    color: colors.primaryDark,
     fontSize: 10.5,
-    fontWeight: '800',
-    letterSpacing: 0.8,
+    fontWeight: '700',
+    letterSpacing: 0.6,
   },
   upcomingTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: -0.4,
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.ink,
+    letterSpacing: -0.3,
     marginBottom: space.xs,
   },
   upcomingSubtitle: {
     fontSize: 13.5,
-    color: 'rgba(255, 255, 255, 0.7)',
-    lineHeight: 20,
+    color: colors.muted,
+    lineHeight: 19,
   },
   upcomingDivider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: colors.lineLight,
     marginVertical: space.lg,
   },
   upcomingFeatureList: {
@@ -1182,38 +1176,38 @@ const styles = StyleSheet.create({
   },
   upcomingFeatureItem: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     gap: space.md,
   },
   upcomingFeatureIconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
   },
   upcomingFeatureTitle: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: '600',
+    color: colors.ink,
     marginBottom: 2,
   },
   upcomingFeatureDesc: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 12.5,
+    color: colors.muted,
     lineHeight: 17,
   },
   upcomingCardFooter: {
     marginTop: space.xl,
     paddingTop: space.md,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    borderTopColor: colors.lineLight,
     alignItems: 'center',
   },
   upcomingCardFooterText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: 'rgba(212, 255, 0, 0.8)',
-    letterSpacing: 1,
+    fontSize: 11.5,
+    fontWeight: '600',
+    color: colors.muted,
+    letterSpacing: 0.5,
   },
 });

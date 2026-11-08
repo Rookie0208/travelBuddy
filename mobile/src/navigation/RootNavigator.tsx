@@ -27,6 +27,7 @@ const navRef = createNavigationContainerRef<RootStackParamList>();
 const screenOptions = {
   headerStyle: { backgroundColor: colors.bg },
   headerTintColor: colors.ink,
+  headerTitleStyle: { fontWeight: '700' as const, fontSize: 17 },
   headerShadowVisible: false,
   contentStyle: { backgroundColor: colors.bg },
 };
@@ -92,14 +93,14 @@ export default function RootNavigator() {
       <Stack.Navigator screenOptions={screenOptions}>
         {user ? (
           <>
-            <Stack.Screen name="Trips" component={TripsScreen} options={{ title: 'My trips' }} />
-            <Stack.Screen name="CreateTrip" component={CreateTripScreen} options={{ title: 'New trip' }} />
+            <Stack.Screen name="Trips" component={TripsScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="CreateTrip" component={CreateTripScreen} options={{ title: 'New Trip' }} />
             <Stack.Screen name="Trip" component={TripScreen} options={{ title: '' }} />
             <Stack.Screen name="ExpenseForm" component={ExpenseFormScreen} options={{ title: 'Expense' }} />
-            <Stack.Screen name="ExpenseDetail" component={ExpenseDetailScreen} options={{ title: 'Expense' }} />
-            <Stack.Screen name="Join" component={JoinScreen} options={{ title: 'Join a trip' }} />
-            <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
-            <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'My Profile' }} />
+            <Stack.Screen name="ExpenseDetail" component={ExpenseDetailScreen} options={{ title: 'Expense Details' }} />
+            <Stack.Screen name="Join" component={JoinScreen} options={{ title: 'Join Trip' }} />
+            <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Updates & Activity' }} />
+            <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
           </>
         ) : (
           <>

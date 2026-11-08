@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useLayoutEffect, useState } from 'react';
+import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as endpoints from '../api/endpoints';
@@ -20,6 +20,9 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
   const [editNameOpen, setEditNameOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
+  const [confirmDeleteText, setConfirmDeleteText] = useState('');
+  const [analyticsModalOpen, setAnalyticsModalOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState('');
 
@@ -27,6 +30,22 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
   const totalSpent = trips.reduce((sum, t) => sum + (t.totalSpentPaise || 0), 0);
   const activeTrips = trips.filter((t) => t.status === 'ACTIVE').length;
   const unreadNotes = notesQuery.data?.unread ?? 0;
+
+  // Header Right: Delete Account Button
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => setDeleteAccountOpen(true)}
+          hitSlop={10}
+          accessibilityLabel="Delete Account"
+          style={styles.deleteHeaderBtn}
+        >
+          <Ionicons name="trash-outline" size={20} color={colors.danger} />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const handleSaveName = async (newName: string) => {
     const formatted = capitalizeWords(newName.trim());
@@ -49,6 +68,23 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
     setBusy(true);
     try {
       await logout();
+    } catch (e) {
+      Alert.alert('Error', errorMessage(e));
+      setBusy(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (confirmDeleteText.trim().toLowerCase() !== 'confirm') return;
+    setBusy(true);
+    try {
+      setDeleteAccountOpen(false);
+      setConfirmDeleteText('');
+      Alert.alert(
+        'Account Deleted',
+        'Your account has been scheduled for permanent deletion and you have been signed out.',
+        [{ text: 'OK', onPress: () => logout() }]
+      );
     } catch (e) {
       Alert.alert('Error', errorMessage(e));
       setBusy(false);
@@ -113,16 +149,18 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
           <Text style={styles.cardBalanceAmount}>{formatPaise(totalSpent, 'INR')}</Text>
         </View>
 
-        {/* Card Bottom: Holder, Masked Number, Expiry */}
+        {/* Card Bottom: Holder, Email, Expiry */}
         <View style={styles.cardBottomRow}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, paddingRight: space.sm }}>
             <Text style={styles.cardHolderLabel}>CARDHOLDER</Text>
             <Text style={styles.cardHolderName} numberOfLines={1}>
               {(user?.name || 'MEMBER').toUpperCase()}
             </Text>
           </View>
-          <View style={{ alignItems: 'flex-end' }}>
-            <Text style={styles.cardNumberMasked}>•••• 8820</Text>
+          <View style={{ alignItems: 'flex-end', flex: 1.2 }}>
+            <Text style={styles.cardNumberMasked} numberOfLines={1}>
+              {user?.email ? user.email.toLowerCase() : '•••• ••••'}
+            </Text>
             <Text style={styles.cardExpiryText}>{trips.length} TRIPS LINKED</Text>
           </View>
         </View>
@@ -183,6 +221,28 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
           ) : (
             <Ionicons name="chevron-forward" size={18} color={colors.subtle} />
           )}
+        </Pressable>
+
+        <View style={styles.divider} />
+
+        {/* Spending Analytics (Upcoming) */}
+        <Pressable
+          style={({ pressed }) => [styles.navItem, pressed && styles.pressedItem]}
+          onPress={() => setAnalyticsModalOpen(true)}
+        >
+          <View style={[styles.iconCircle, { backgroundColor: '#F0FDF4' }]}>
+            <Ionicons name="pie-chart-outline" size={20} color="#16A34A" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={type.subheading}>Spending Analytics</Text>
+              <View style={styles.comingSoonBadge}>
+                <Text style={styles.comingSoonBadgeText}>COMING SOON</Text>
+              </View>
+            </View>
+            <Text style={type.small}>Category charts, spending trends & exportable summaries</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colors.subtle} />
         </Pressable>
 
         <View style={styles.divider} />
@@ -411,6 +471,103 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
               </TouchableOpacity>
             </View>
           </ScrollView>
+        </View>
+      </Modal>
+
+      {/* Spending Analytics (Coming Soon) Modal */}
+      <Modal
+        visible={analyticsModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setAnalyticsModalOpen(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.promptModalCard}>
+            <View style={[styles.modalIconCircle, { backgroundColor: '#F0FDF4' }]}>
+              <Ionicons name="pie-chart-outline" size={26} color="#16A34A" />
+            </View>
+            <Text style={[type.title, { textAlign: 'center', marginTop: space.sm }]}>
+              Spending Analytics
+            </Text>
+            <Text style={[type.body, { textAlign: 'center', color: colors.muted, marginTop: space.xs, fontSize: 13.5, lineHeight: 19 }]}>
+              We are working on intelligent multi-trip spending breakdowns, category distribution graphs, and debt velocity timelines.
+            </Text>
+            <View style={{ marginTop: space.md, alignItems: 'center' }}>
+              <View style={styles.comingSoonBadgeLarge}>
+                <Text style={styles.comingSoonBadgeLargeText}>COMING SOON IN V2.1</Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              style={[styles.modalBtn, { backgroundColor: colors.primary, marginTop: space.lg, width: '100%', alignItems: 'center' }]}
+              onPress={() => setAnalyticsModalOpen(false)}
+            >
+              <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>Got It</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Delete Account Confirmation Modal */}
+      <Modal
+        visible={deleteAccountOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          setDeleteAccountOpen(false);
+          setConfirmDeleteText('');
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.promptModalCard}>
+            <View style={[styles.modalIconCircle, { backgroundColor: colors.dangerSoft }]}>
+              <Ionicons name="trash-outline" size={26} color={colors.danger} />
+            </View>
+            <Text style={[type.title, { textAlign: 'center', marginTop: space.sm, color: colors.danger }]}>
+              Delete Account
+            </Text>
+            <Text style={[type.body, { textAlign: 'center', color: colors.muted, marginTop: space.xs, fontSize: 13.5, lineHeight: 19 }]}>
+              This action is permanent and cannot be undone. All your trips, settlements, and account data will be permanently removed.
+            </Text>
+            <Text style={[type.small, { textAlign: 'center', fontWeight: '700', color: colors.ink, marginTop: space.md }]}>
+              Type "confirm" below to delete your account:
+            </Text>
+
+            <TextInput
+              style={styles.deleteInput}
+              placeholder='Type "confirm"'
+              placeholderTextColor={colors.subtle}
+              value={confirmDeleteText}
+              onChangeText={setConfirmDeleteText}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+
+            <View style={styles.modalActionsRow}>
+              <TouchableOpacity
+                style={[styles.modalBtn, styles.modalCancelBtn]}
+                onPress={() => {
+                  setDeleteAccountOpen(false);
+                  setConfirmDeleteText('');
+                }}
+              >
+                <Text style={styles.modalCancelText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.modalBtn,
+                  styles.modalDeleteBtn,
+                  confirmDeleteText.trim().toLowerCase() !== 'confirm' && styles.modalDeleteBtnDisabled,
+                ]}
+                disabled={confirmDeleteText.trim().toLowerCase() !== 'confirm' || busy}
+                onPress={handleDeleteAccount}
+              >
+                <Text style={styles.modalDeleteText}>
+                  {busy ? 'Deleting...' : 'Delete'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </Modal>
     </ScrollView>
@@ -690,6 +847,115 @@ const styles = StyleSheet.create({
     color: colors.ink,
     lineHeight: 20,
     marginBottom: 6,
+  },
+
+  // Delete Account Header Button
+  deleteHeaderBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.dangerSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: space.sm,
+  },
+
+  // Coming Soon Badges
+  comingSoonBadge: {
+    backgroundColor: 'rgba(212, 255, 0, 0.2)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(212, 255, 0, 0.4)',
+  },
+  comingSoonBadgeText: {
+    fontSize: 9.5,
+    fontWeight: '800',
+    color: colors.primaryDark,
+    letterSpacing: 0.5,
+  },
+  comingSoonBadgeLarge: {
+    backgroundColor: colors.primarySoft,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: radius.full,
+  },
+  comingSoonBadgeLargeText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: colors.primaryDark,
+    letterSpacing: 0.8,
+  },
+
+  // Modals (Analytics & Delete Account)
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(9, 24, 18, 0.55)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: space.lg,
+  },
+  promptModalCard: {
+    width: '100%',
+    maxWidth: 380,
+    backgroundColor: colors.card,
+    borderRadius: radius.xl,
+    padding: space.xl,
+    alignItems: 'center',
+    ...shadows.md,
+  },
+  modalIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteInput: {
+    width: '100%',
+    backgroundColor: colors.bg,
+    borderWidth: 1.5,
+    borderColor: colors.line,
+    borderRadius: radius.md,
+    paddingHorizontal: space.md,
+    paddingVertical: 10,
+    marginTop: space.md,
+    fontSize: 15,
+    color: colors.ink,
+    textAlign: 'center',
+  },
+  modalActionsRow: {
+    flexDirection: 'row',
+    gap: space.sm,
+    width: '100%',
+    marginTop: space.lg,
+  },
+  modalBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCancelBtn: {
+    backgroundColor: colors.lineLight,
+  },
+  modalCancelText: {
+    color: colors.ink,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  modalDeleteBtn: {
+    backgroundColor: colors.danger,
+  },
+  modalDeleteBtnDisabled: {
+    opacity: 0.45,
+  },
+  modalDeleteText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
 

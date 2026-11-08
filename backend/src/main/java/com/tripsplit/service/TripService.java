@@ -100,7 +100,7 @@ public class TripService {
 
         return new TripDetail(t.getId(), t.getName(), t.getDestination(), t.getStartDate(), t.getEndDate(), t.getNotes(),
                 t.getCurrency(), t.getStatus(), me.getId(), me.getRole(),
-                owner ? t.getInviteCode() : null, memberDtos, pending);
+                t.getInviteCode(), memberDtos, pending);
     }
 
     @Transactional
