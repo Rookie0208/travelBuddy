@@ -19,7 +19,7 @@ import { API_URL } from '../config';
 import { capitalizeWords } from '../utils/format';
 import { ConfirmModal, ErrorState, Loading, PromptModal } from '../components/ui';
 import { invalidateTrip } from '../queries';
-import { colors, radius, space, type } from '../theme';
+import { colors, radius, shadows, space, type } from '../theme';
 import type { Props } from '../navigation/types';
 import ExpensesTab from './trip/ExpensesTab';
 import BalancesTab from './trip/BalancesTab';
@@ -258,27 +258,85 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
   // ── Header ──────────────────────────────────────────────────────────────────
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: data?.name ?? '',
+      headerTitle: () =>
+        data ? (
+          <View style={{ alignItems: 'flex-start' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text
+                style={{
+                  fontSize: 17,
+                  fontWeight: '800',
+                  color: colors.ink,
+                  letterSpacing: -0.3,
+                  maxWidth: 160,
+                }}
+                numberOfLines={1}
+              >
+                {data.name}
+              </Text>
+              <View
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: 3.5,
+                  backgroundColor: data.status === 'ACTIVE' ? '#10B981' : colors.muted,
+                }}
+              />
+            </View>
+            <Text
+              style={{ fontSize: 11, color: colors.muted, fontWeight: '600' }}
+              numberOfLines={1}
+            >
+              {data.destination ? `${data.destination} • ` : ''}Code: {data.inviteCode}
+            </Text>
+          </View>
+        ) : null,
       headerRight: () =>
         data ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             {/* Add person (owner only) */}
             {isOwner ? (
               <Pressable
                 onPress={() => setAddPersonVisible(true)}
                 accessibilityLabel="Add person by name"
                 hitSlop={10}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  backgroundColor: colors.card,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: colors.lineLight,
+                  ...shadows.sm,
+                }}
               >
-                <Ionicons name="person-add-outline" size={22} color={colors.ink} />
+                <Ionicons name="person-add-outline" size={18} color={colors.ink} />
               </Pressable>
             ) : null}
-            {/* Single file button → opens sheet with download + upload */}
+
+            {/* Premium Excel button with badge and icon */}
             <Pressable
               onPress={() => setFileSheetOpen(true)}
-              accessibilityLabel="File actions"
-              hitSlop={10}
+              accessibilityLabel="Excel Export and Import"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 5,
+                backgroundColor: '#0A1813',
+                paddingHorizontal: 11,
+                paddingVertical: 7,
+                borderRadius: radius.full,
+                borderWidth: 1.5,
+                borderColor: '#1D3B2E',
+                ...shadows.sm,
+              }}
             >
-              <Ionicons name="document-outline" size={24} color={colors.ink} />
+              <Ionicons name="document-text" size={13} color="#D4FF00" />
+              <Text style={{ color: '#D4FF00', fontSize: 11, fontWeight: '800', letterSpacing: 0.5 }}>
+                EXCEL
+              </Text>
             </Pressable>
           </View>
         ) : null,
@@ -319,84 +377,183 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
       keyboardVerticalOffset={90}
     >
       {/* ── Tab content ─────────────────────────────────────────── */}
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, paddingBottom: 72 }}>
         {tab === 'expenses' && <ExpensesTab trip={data} navigation={navigation} />}
         {tab === 'balances' && <BalancesTab trip={data} />}
         {tab === 'members' && <MembersTab trip={data} navigation={navigation} />}
         {tab === 'history' && <HistoryTab trip={data} />}
       </View>
 
-      {/* ── Bottom Navigation Bar with icons ───────────────────────── */}
+      {/* ── Velto Floating Dock Bottom Navigation Bar ──────────────── */}
       <View
         style={{
+          position: 'absolute',
+          bottom: Platform.OS === 'ios' ? 24 : 14,
+          left: space.md,
+          right: space.md,
+          backgroundColor: '#0A1813',
+          borderRadius: radius.full,
+          height: 60,
           flexDirection: 'row',
-          backgroundColor: colors.card,
-          borderTopWidth: 1,
-          borderTopColor: colors.lineLight,
-          paddingVertical: 8,
-          paddingBottom: Platform.OS === 'ios' ? 24 : 10,
           alignItems: 'center',
           justifyContent: 'space-around',
+          paddingHorizontal: 6,
+          borderWidth: 1.5,
+          borderColor: '#1D3B2E',
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 6,
-          elevation: 6,
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.28,
+          shadowRadius: 16,
+          elevation: 12,
         }}
       >
-        {tabs.map(t => {
-          const on = tab === t.key;
-          return (
-            <Pressable
-              key={t.key}
-              onPress={() => setTab(t.key)}
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingVertical: 4,
-              }}
-              hitSlop={8}
-            >
+        {/* Tab 1: Expenses */}
+        <Pressable
+          onPress={() => setTab('expenses')}
+          style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 4 }}
+          hitSlop={8}
+        >
+          <View
+            style={{
+              minWidth: 46,
+              height: 38,
+              borderRadius: radius.full,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: tab === 'expenses' ? '#D4FF00' : 'transparent',
+              paddingHorizontal: 8,
+            }}
+          >
+            <Ionicons
+              name={tab === 'expenses' ? 'receipt' : 'receipt-outline'}
+              size={21}
+              color={tab === 'expenses' ? '#08251C' : 'rgba(255,255,255,0.6)'}
+            />
+          </View>
+        </Pressable>
+
+        {/* Tab 2: Balances */}
+        <Pressable
+          onPress={() => setTab('balances')}
+          style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 4 }}
+          hitSlop={8}
+        >
+          <View
+            style={{
+              minWidth: 46,
+              height: 38,
+              borderRadius: radius.full,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: tab === 'balances' ? '#D4FF00' : 'transparent',
+              paddingHorizontal: 8,
+            }}
+          >
+            <Ionicons
+              name={tab === 'balances' ? 'scale' : 'scale-outline'}
+              size={21}
+              color={tab === 'balances' ? '#08251C' : 'rgba(255,255,255,0.6)'}
+            />
+          </View>
+        </Pressable>
+
+        {/* Center: Popped-Out Add Expense Button */}
+        <TouchableOpacity
+          onPress={() => {
+            if (data.status !== 'SETTLED') {
+              navigation.navigate('ExpenseForm', { tripId: data.id });
+            }
+          }}
+          activeOpacity={0.85}
+          style={{
+            width: 54,
+            height: 54,
+            borderRadius: 27,
+            backgroundColor: '#D4FF00',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: -20,
+            borderWidth: 3.5,
+            borderColor: '#0A1813',
+            shadowColor: '#D4FF00',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.35,
+            shadowRadius: 10,
+            elevation: 14,
+          }}
+        >
+          <Ionicons name="add" size={30} color="#08251C" />
+        </TouchableOpacity>
+
+        {/* Tab 3: Members */}
+        <Pressable
+          onPress={() => setTab('members')}
+          style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 4 }}
+          hitSlop={8}
+        >
+          <View
+            style={{
+              minWidth: 46,
+              height: 38,
+              borderRadius: radius.full,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: tab === 'members' ? '#D4FF00' : 'transparent',
+              paddingHorizontal: 8,
+            }}
+          >
+            <Ionicons
+              name={tab === 'members' ? 'people' : 'people-outline'}
+              size={21}
+              color={tab === 'members' ? '#08251C' : 'rgba(255,255,255,0.6)'}
+            />
+            {pending > 0 && (
               <View
                 style={{
-                  width: 52,
-                  height: 36,
-                  borderRadius: radius.full,
+                  position: 'absolute',
+                  top: 4,
+                  right: 4,
+                  backgroundColor: colors.danger,
+                  borderRadius: 7,
+                  minWidth: 14,
+                  height: 14,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: on ? colors.primarySoft : 'transparent',
+                  paddingHorizontal: 2,
                 }}
               >
-                <Ionicons
-                  name={on ? t.activeIcon : t.icon}
-                  size={24}
-                  color={on ? colors.primary : colors.muted}
-                />
-                {t.badge && t.badge > 0 ? (
-                  <View
-                    style={{
-                      position: 'absolute',
-                      top: 2,
-                      right: 8,
-                      backgroundColor: colors.danger,
-                      borderRadius: 8,
-                      minWidth: 16,
-                      height: 16,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      paddingHorizontal: 3,
-                    }}
-                  >
-                    <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>
-                      {t.badge > 9 ? '9+' : t.badge}
-                    </Text>
-                  </View>
-                ) : null}
+                <Text style={{ color: '#fff', fontSize: 9, fontWeight: '800' }}>
+                  {pending > 9 ? '9+' : pending}
+                </Text>
               </View>
-            </Pressable>
-          );
-        })}
+            )}
+          </View>
+        </Pressable>
+
+        {/* Tab 4: History */}
+        <Pressable
+          onPress={() => setTab('history')}
+          style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 4 }}
+          hitSlop={8}
+        >
+          <View
+            style={{
+              minWidth: 46,
+              height: 38,
+              borderRadius: radius.full,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: tab === 'history' ? '#D4FF00' : 'transparent',
+              paddingHorizontal: 8,
+            }}
+          >
+            <Ionicons
+              name={tab === 'history' ? 'time' : 'time-outline'}
+              size={21}
+              color={tab === 'history' ? '#08251C' : 'rgba(255,255,255,0.6)'}
+            />
+          </View>
+        </Pressable>
       </View>
 
       {/* ── File actions sheet ───────────────────────────────────── */}

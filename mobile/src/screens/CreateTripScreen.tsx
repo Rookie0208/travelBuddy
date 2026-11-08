@@ -12,8 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import * as endpoints from '../api/endpoints';
 import { errorMessage } from '../api/client';
-import { Button, Card, Chip, Field } from '../components/ui';
-import { colors, radius, space, type } from '../theme';
+import { Avatar, Button, Card, Chip, Field } from '../components/ui';
+import { colors, radius, shadows, space, type } from '../theme';
 import { capitalizeWords } from '../utils/format';
 import type { Props } from '../navigation/types';
 
@@ -362,65 +362,114 @@ export default function CreateTripScreen({ navigation }: Props<'CreateTrip'>) {
       {/* ── Who is coming ─────────────────────────────────────────── */}
       <Text style={[type.heading, { marginTop: space.sm }]}>Who is coming?</Text>
       <Text style={[type.small, { marginBottom: space.md }]}>
-        You are added automatically. Add friends by name — they can join later
-        via invite link and link to their name.
+        You are added automatically. Add friends by name — they get their own cute avatar and can claim it later.
       </Text>
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs, marginBottom: space.sm }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: space.sm }}>
         {guests.map((g, i) => (
-          <Chip
+          <Pressable
             key={`${g}-${i}`}
-            label={`${g}  ✕`}
             onPress={() => setGuests(arr => arr.filter((_, idx) => idx !== i))}
-          />
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+              backgroundColor: colors.card,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: radius.full,
+              borderWidth: 1,
+              borderColor: colors.lineLight,
+              ...shadows.sm,
+            }}
+          >
+            <Avatar name={g} size={22} />
+            <Text style={{ fontSize: 13, fontWeight: '600', color: colors.ink }}>{g}</Text>
+            <Ionicons name="close-circle" size={16} color={colors.subtle} />
+          </Pressable>
         ))}
       </View>
 
-      <View style={{ flexDirection: 'row', gap: space.sm, alignItems: 'flex-start' }}>
+      <View style={{ flexDirection: 'row', gap: space.sm, alignItems: 'flex-start', marginBottom: space.lg }}>
         <View style={{ flex: 1 }}>
           <Field
             value={guestInput}
             onChangeText={setGuestInput}
-            placeholder="Friend's name"
+            placeholder="Friend's name (e.g. Rahul, Priya)"
             onSubmitEditing={addGuest}
             returnKeyType="done"
             maxLength={100}
             autoCapitalize="words"
           />
         </View>
-        <Button title="Add" variant="secondary" onPress={addGuest} disabled={!guestInput.trim()} />
+        <Button title="+ Add" variant="secondary" onPress={addGuest} disabled={!guestInput.trim()} />
       </View>
 
-      {/* ── Currency ──────────────────────────────────────────────── */}
-      <View style={{ marginTop: space.sm, marginBottom: space.lg }}>
-        {changeCurrency ? (
-          <Field
-            label="Currency code"
-            value={currency}
-            onChangeText={t => setCurrency(t.toUpperCase())}
-            autoCapitalize="characters"
-            maxLength={3}
-          />
-        ) : (
-          <Card style={{ padding: space.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View>
-              <Text style={type.small}>Currency</Text>
-              <Text style={{ fontWeight: '700', fontSize: 18, color: colors.ink }}>₹ INR</Text>
-            </View>
-            <Text
-              style={{ color: colors.primary, fontWeight: '600', fontSize: 13 }}
-              onPress={() => setChangeCurrency(true)}
+      {/* ── Currency Selection Pills ──────────────────────────────── */}
+      <Text style={[type.caption, { marginBottom: 8 }]}>TRIP CURRENCY</Text>
+      <View style={{ flexDirection: 'row', gap: 8, marginBottom: space.xl }}>
+        {[
+          { code: 'INR', symbol: '₹' },
+          { code: 'USD', symbol: '$' },
+          { code: 'EUR', symbol: '€' },
+          { code: 'GBP', symbol: '£' },
+        ].map(c => {
+          const active = currency === c.code;
+          return (
+            <Pressable
+              key={c.code}
+              onPress={() => {
+                setCurrency(c.code);
+                setChangeCurrency(true);
+              }}
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingVertical: 10,
+                borderRadius: radius.lg,
+                backgroundColor: active ? '#0D382A' : colors.card,
+                borderWidth: 1,
+                borderColor: active ? '#0D382A' : colors.lineLight,
+                ...shadows.sm,
+              }}
             >
-              Change
-            </Text>
-          </Card>
-        )}
+              <Text style={{ fontSize: 16, fontWeight: '800', color: active ? '#D4FF00' : colors.ink }}>
+                {c.symbol}
+              </Text>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: active ? 'rgba(255,255,255,0.8)' : colors.muted, marginTop: 2 }}>
+                {c.code}
+              </Text>
+            </Pressable>
+          );
+        })}
       </View>
 
       {error ? (
         <Text style={{ color: colors.danger, marginBottom: space.md }}>{error}</Text>
       ) : null}
-      <Button title="Create trip" onPress={submit} loading={busy} disabled={!valid} />
+
+      <TouchableOpacity
+        onPress={submit}
+        disabled={!valid || busy}
+        style={{
+          backgroundColor: '#D4FF00',
+          height: 52,
+          borderRadius: radius.full,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          opacity: !valid ? 0.5 : 1,
+          ...shadows.md,
+        }}
+        activeOpacity={0.88}
+      >
+        <Text style={{ color: '#08251C', fontSize: 16, fontWeight: '800' }}>
+          {busy ? 'Creating Trip…' : 'Create Trip Ledger'}
+        </Text>
+        <Ionicons name="arrow-forward" size={18} color="#08251C" />
+      </TouchableOpacity>
     </ScrollView>
   );
 }

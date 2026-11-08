@@ -32,16 +32,37 @@ const screenOptions = {
 };
 
 function codeFromUrl(url: string | null): string | null {
-  if (!url) return null;
-  const m = url.match(/join\/([A-Za-z0-9_-]+)/);
+  const target = url || (typeof window !== 'undefined' && window.location?.href ? window.location.href : null);
+  if (!target) return null;
+  const m = target.match(/join\/([A-Za-z0-9_-]+)/);
   return m ? m[1] : null;
 }
+
+const linking = {
+  prefixes: [
+    Linking.createURL('/'),
+    'https://travelbuddy-mobile.vercel.app',
+    'http://localhost:8081',
+    'http://localhost:19006',
+  ],
+  config: {
+    screens: {
+      Join: 'join/:code',
+      Trips: '',
+      Trip: 'trips/:tripId',
+      Profile: 'profile',
+      Login: 'login',
+      Register: 'register',
+      Verify: 'verify',
+    },
+  },
+};
 
 export default function RootNavigator() {
   const { user, booting } = useAuth();
   const qc = useQueryClient();
   const url = Linking.useURL();
-  const pendingCode = useRef<string | null>(null);
+  const pendingCode = useRef<string | null>(codeFromUrl(url));
 
   // Remember an invite link even if the user still has to log in.
   useEffect(() => {
@@ -67,7 +88,7 @@ export default function RootNavigator() {
   if (booting) return <Loading />;
 
   return (
-    <NavigationContainer ref={navRef} onReady={openPendingInvite}>
+    <NavigationContainer ref={navRef} linking={linking} onReady={openPendingInvite}>
       <Stack.Navigator screenOptions={screenOptions}>
         {user ? (
           <>

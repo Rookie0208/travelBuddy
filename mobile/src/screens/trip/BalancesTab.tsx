@@ -8,9 +8,10 @@ import * as Crypto from 'expo-crypto';
 import * as endpoints from '../../api/endpoints';
 import { errorMessage } from '../../api/client';
 import type { Balance, Expense, Transfer, TripDetail } from '../../api/types';
-import { Button, Card, Chip, ConfirmModal, ErrorState, Loading, SectionTitle } from '../../components/ui';
+import { Avatar, Button, Card, Chip, ConfirmModal, ErrorState, Loading, SectionTitle } from '../../components/ui';
 import { invalidateTrip } from '../../queries';
-import { colors, space, type } from '../../theme';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, radius, space, type } from '../../theme';
 import { formatWhen } from '../../utils/format';
 import { formatPaise, previewShares } from '../../utils/money';
 
@@ -332,28 +333,56 @@ export default function BalancesTab({ trip }: { trip: TripDetail }) {
         />
       }
     >
-      {/* ── Summary card ─────────────────────────────────────────── */}
-      <Card>
-        <Text style={type.small}>Total spent</Text>
+      {/* ── Summary card: Velto Style ──────────────────────────── */}
+      <View
+        style={{
+          backgroundColor: '#0A1813',
+          borderRadius: radius.xl,
+          padding: space.xl,
+          borderWidth: 1.5,
+          borderColor: '#1D3B2E',
+          marginBottom: space.lg,
+          shadowColor: '#071610',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.2,
+          shadowRadius: 14,
+          elevation: 5,
+        }}
+      >
+        <Text style={{ fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.5)', letterSpacing: 0.6 }}>
+          TOTAL TRIP EXPENDITURE
+        </Text>
         <Text
           style={{
-            fontSize: 30,
+            fontSize: 34,
             fontWeight: '800',
-            color: colors.ink,
-            marginTop: 2,
+            color: '#FFFFFF',
+            letterSpacing: -0.8,
+            marginVertical: space.xs,
           }}
         >
           {money(b.totalSpentPaise)}
         </Text>
-        <Text style={[type.small, { marginTop: 4 }]}>
-          About {money(perHead)} per person if everyone shared everything
+        <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>
+          About {money(perHead)} per person if shared equally
         </Text>
         {settled ? (
           <View style={{ flexDirection: 'row', marginTop: space.md }}>
-            <Chip label="Trip settled" tone="good" />
+            <View
+              style={{
+                backgroundColor: 'rgba(212, 255, 0, 0.15)',
+                paddingHorizontal: 10,
+                paddingVertical: 4,
+                borderRadius: radius.full,
+                borderWidth: 1,
+                borderColor: 'rgba(212, 255, 0, 0.3)',
+              }}
+            >
+              <Text style={{ color: '#D4FF00', fontSize: 11, fontWeight: '800' }}>TRIP SETTLED</Text>
+            </View>
           </View>
         ) : null}
-      </Card>
+      </View>
 
       {/* ── Who owes whom ─────────────────────────────────────────── */}
       <SectionTitle>Who owes whom</SectionTitle>
@@ -381,22 +410,25 @@ export default function BalancesTab({ trip }: { trip: TripDetail }) {
                   alignItems: 'center',
                 }}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <Text
-                    style={[
-                      type.body,
-                      {
-                        color: isExpanded ? colors.primary : colors.ink,
-                        fontWeight: isExpanded ? '700' : '500',
-                      },
-                    ]}
-                  >
-                    {m.name}
-                    {m.guest ? '  (guest)' : ''}
-                  </Text>
-                  {m.memberId === trip.myMemberId ? (
-                    <Chip label="you" tone="accent" />
-                  ) : null}
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Avatar name={m.name} size={32} />
+                  <View>
+                    <Text
+                      style={[
+                        type.body,
+                        {
+                          color: isExpanded ? colors.primary : colors.ink,
+                          fontWeight: isExpanded ? '700' : '600',
+                        },
+                      ]}
+                    >
+                      {m.name}
+                      {m.guest ? ' (guest)' : ''}
+                    </Text>
+                    {m.memberId === trip.myMemberId && (
+                      <Text style={{ fontSize: 11, color: colors.primary, fontWeight: '700' }}>You</Text>
+                    )}
+                  </View>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <Text
@@ -453,15 +485,19 @@ export default function BalancesTab({ trip }: { trip: TripDetail }) {
               }}
             >
               <View style={{ flex: 1, paddingRight: space.md }}>
-                <Text style={type.body}>
-                  {t.fromName} → {t.toName}
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                  <Avatar name={t.fromName} size={24} />
+                  <Ionicons name="arrow-forward" size={13} color={colors.subtle} />
+                  <Avatar name={t.toName} size={24} />
+                  <Text style={[type.subheading, { color: colors.ink }]} numberOfLines={1}>
+                    {t.fromName} pays {t.toName}
+                  </Text>
+                </View>
                 <Text
                   style={{
-                    fontWeight: '700',
-                    fontSize: 16,
-                    marginTop: 2,
-                    color: colors.ink,
+                    fontWeight: '800',
+                    fontSize: 18,
+                    color: colors.primaryDark,
                   }}
                 >
                   {money(t.amountPaise)}

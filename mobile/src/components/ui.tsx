@@ -150,15 +150,47 @@ export function SectionTitle({ children, rightAction }: { children: React.ReactN
   );
 }
 
-export function Avatar({ name, size = 44, color }: { name: string; size?: number; color?: string }) {
-  const initials = (name || '?')
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w.charAt(0).toUpperCase())
-    .join('');
+const CUTE_AVATARS = [
+  { emoji: '🦊', bg: '#FFE4E6', border: '#FDA4AF' },
+  { emoji: '🐼', bg: '#E0F2FE', border: '#7DD3FC' },
+  { emoji: '🦁', bg: '#FEF3C7', border: '#FCD34D' },
+  { emoji: '🐨', bg: '#F3E8FF', border: '#D8B4FE' },
+  { emoji: '🐰', bg: '#FCE7F3', border: '#F472B6' },
+  { emoji: '🐯', bg: '#FFEDD5', border: '#FDBA74' },
+  { emoji: '🦉', bg: '#E2E8F0', border: '#CBD5E1' },
+  { emoji: '🐧', bg: '#CFFAFE', border: '#67E8F9' },
+  { emoji: '🐬', bg: '#DBEAFE', border: '#93C5FD' },
+  { emoji: '🦄', bg: '#FDF4FF', border: '#F0ABFC' },
+  { emoji: '🐻', bg: '#FEF9C3', border: '#FDE047' },
+  { emoji: '🐙', bg: '#F1F5F9', border: '#CBD5E1' },
+  { emoji: '🦦', bg: '#DCFCE7', border: '#86EFAC' },
+  { emoji: '🐸', bg: '#ECFDF5', border: '#6EE7B7' },
+];
 
-  const bg = color || colors.primary;
+export function getCuteAvatar(name: string) {
+  let hash = 0;
+  const str = (name || 'User').trim();
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  const index = Math.abs(hash) % CUTE_AVATARS.length;
+  return CUTE_AVATARS[index];
+}
+
+export function Avatar({
+  name,
+  size = 44,
+  imageUri,
+  color,
+}: {
+  name: string;
+  size?: number;
+  imageUri?: string | null;
+  color?: string;
+}) {
+  const avatar = getCuteAvatar(name);
+  const bg = color || avatar.bg;
 
   return (
     <View
@@ -167,11 +199,16 @@ export function Avatar({ name, size = 44, color }: { name: string; size?: number
         height: size,
         borderRadius: size / 2,
         backgroundColor: bg,
+        borderWidth: 1.5,
+        borderColor: avatar.border,
         alignItems: 'center',
         justifyContent: 'center',
+        overflow: 'hidden',
       }}
     >
-      <Text style={{ color: '#fff', fontSize: size * 0.4, fontWeight: '700' }}>{initials}</Text>
+      <Text style={{ fontSize: Math.round(size * 0.52), lineHeight: Math.round(size * 0.6) }}>
+        {avatar.emoji}
+      </Text>
     </View>
   );
 }

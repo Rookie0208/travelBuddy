@@ -11,6 +11,7 @@ import { getShareUrl } from '../../config';
 import type { Member, TripDetail } from '../../api/types';
 import {
   ActionMenuModal,
+  Avatar,
   Button,
   Card,
   Chip,
@@ -318,13 +319,16 @@ export default function MembersTab({
               borderTopColor: colors.line,
             }}
           >
-            <View>
-              <Text style={type.body}>
-                {m.name}
-                {m.id === trip.myMemberId ? (
-                  <Text style={{ color: colors.muted }}> (you)</Text>
-                ) : null}
-              </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+              <Avatar name={m.name} size={36} />
+              <View>
+                <Text style={type.body}>
+                  {m.name}
+                  {m.id === trip.myMemberId ? (
+                    <Text style={{ color: colors.muted }}> (you)</Text>
+                  ) : null}
+                </Text>
+              </View>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: '60%' }}>
               {m.role === 'OWNER' ? (

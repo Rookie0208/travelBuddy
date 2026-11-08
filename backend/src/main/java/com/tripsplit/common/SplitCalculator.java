@@ -10,9 +10,14 @@ public final class SplitCalculator {
      * in a stable order (sorted by member id), so shares always add up to exactly the total.
      */
     public static Map<UUID, Long> equalSplit(long total, Collection<UUID> memberIds) {
+        if (total < 0) {
+            throw new IllegalArgumentException("Expense amount cannot be negative");
+        }
+        if (memberIds == null || memberIds.isEmpty()) {
+            throw new IllegalArgumentException("At least one member is required");
+        }
         List<UUID> sorted = new ArrayList<>(new TreeSet<>(memberIds));
         int n = sorted.size();
-        if (n == 0) throw new IllegalArgumentException("At least one member is required");
         long base = total / n;
         long remainder = total % n;
         Map<UUID, Long> result = new LinkedHashMap<>();
