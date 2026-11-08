@@ -352,47 +352,52 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      {/* ── Top Trip Overview Banner: Trip Name & Invite Code directly below it ── */}
-      <View style={styles.tripBannerCard}>
+      {/* ── Trip Header: Consistent with all other sections (No odd white card) ── */}
+      <View style={styles.tripHeaderSection}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View style={{ flex: 1, paddingRight: space.sm }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Text style={styles.tripBannerName} numberOfLines={1}>{data.name}</Text>
-              <View style={[styles.statusDot, { backgroundColor: data.status === 'ACTIVE' ? '#10B981' : colors.muted }]} />
+          <View style={{ flex: 1 }}>
+            <Text style={type.caption}>TRIP OVERVIEW</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
+              <Text style={styles.tripTitleText} numberOfLines={1}>
+                {data.name}
+              </Text>
+              <View
+                style={[
+                  styles.statusDot,
+                  { backgroundColor: data.status === 'ACTIVE' ? '#10B981' : colors.muted },
+                ]}
+              />
             </View>
 
-            {/* Just below the trip name: trip invite code */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
-              <View style={styles.inviteCodeBadge}>
-                <Ionicons name="key-outline" size={12} color={colors.primaryDark} />
-                <Text style={styles.inviteCodeBadgeText}>
-                  CODE: {data.inviteCode ?? 'ACTIVE'}
-                </Text>
-              </View>
+            {/* Just below the trip name: Invite code & Destination */}
+            <View style={styles.tripMetaRow}>
+              {data.inviteCode ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
+                      navigator.clipboard.writeText(data.inviteCode!);
+                      alert(`Invite code ${data.inviteCode} copied to clipboard!`);
+                    } else {
+                      Alert.alert('Trip Invite Code', `Share this code with your friends:\n\n${data.inviteCode}`);
+                    }
+                  }}
+                  activeOpacity={0.75}
+                  style={styles.invitePill}
+                >
+                  <Ionicons name="key-outline" size={13} color={colors.primaryDark} />
+                  <Text style={styles.invitePillLabel}>Invite Code:</Text>
+                  <Text style={styles.invitePillCode}>{data.inviteCode}</Text>
+                  <Ionicons name="copy-outline" size={11} color={colors.primaryDark} style={{ marginLeft: 2 }} />
+                </TouchableOpacity>
+              ) : null}
+
               {data.destination ? (
-                <Text style={styles.tripBannerDest} numberOfLines={1}>• {data.destination}</Text>
+                <Text style={styles.destText} numberOfLines={1}>
+                  {data.destination}
+                </Text>
               ) : null}
             </View>
           </View>
-
-          {/* Quick Copy Code Button */}
-          {data.inviteCode ? (
-            <TouchableOpacity
-              onPress={() => {
-                if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
-                  navigator.clipboard.writeText(data.inviteCode!);
-                  alert(`Invite Code ${data.inviteCode} copied to clipboard!`);
-                } else {
-                  Alert.alert('Trip Invite Code', `Share this code with your friends:\n\n${data.inviteCode}`);
-                }
-              }}
-              style={styles.copyCodeButton}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="copy-outline" size={13} color={colors.primaryDark} />
-              <Text style={styles.copyCodeButtonText}>Copy</Text>
-            </TouchableOpacity>
-          ) : null}
         </View>
       </View>
 
@@ -626,16 +631,13 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
 }
 
 const styles = StyleSheet.create({
-  tripBannerCard: {
-    backgroundColor: colors.card,
+  tripHeaderSection: {
     paddingHorizontal: space.lg,
-    paddingVertical: space.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lineLight,
-    ...shadows.sm,
+    paddingTop: space.xs,
+    paddingBottom: space.sm,
   },
-  tripBannerName: {
-    fontSize: 20,
+  tripTitleText: {
+    fontSize: 24,
     fontWeight: '800',
     color: colors.ink,
     letterSpacing: -0.4,
@@ -645,42 +647,38 @@ const styles = StyleSheet.create({
     height: 7,
     borderRadius: 3.5,
   },
-  inviteCodeBadge: {
+  tripMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
+    marginTop: 6,
+    flexWrap: 'wrap',
+  },
+  invitePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     backgroundColor: colors.primarySoft,
-    paddingHorizontal: 8,
-    paddingVertical: 2.5,
-    borderRadius: radius.sm,
+    paddingHorizontal: 9,
+    paddingVertical: 3.5,
+    borderRadius: radius.full,
     borderWidth: 1,
     borderColor: 'rgba(13, 56, 42, 0.15)',
   },
-  inviteCodeBadgeText: {
+  invitePillLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.muted,
+  },
+  invitePillCode: {
     fontSize: 12,
     fontWeight: '800',
     color: colors.primaryDark,
     letterSpacing: 0.8,
   },
-  tripBannerDest: {
+  destText: {
     fontSize: 12,
     color: colors.muted,
     fontWeight: '500',
-  },
-  copyCodeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: colors.lineLight,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: radius.full,
-    borderWidth: 1,
-    borderColor: colors.line,
-  },
-  copyCodeButtonText: {
-    fontSize: 11.5,
-    fontWeight: '700',
-    color: colors.primaryDark,
   },
 });
