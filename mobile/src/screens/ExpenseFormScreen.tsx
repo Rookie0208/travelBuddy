@@ -117,6 +117,14 @@ export default function ExpenseFormScreen({ route, navigation }: Props<'ExpenseF
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
+      {/* Section Header */}
+      <View style={{ marginBottom: space.md, paddingHorizontal: space.xs }}>
+        <Text style={type.caption}>TRANSACTION</Text>
+        <Text style={[type.largeTitle, { fontSize: 26, marginTop: 2 }]}>
+          {expense ? 'Edit Expense' : 'Add Expense'}
+        </Text>
+      </View>
+
       {/* 1. Hero Amount Display Card */}
       <View style={styles.heroAmountBox}>
         <Text style={styles.heroAmountCurrency}>{data.currency}</Text>
@@ -128,6 +136,8 @@ export default function ExpenseFormScreen({ route, navigation }: Props<'ExpenseF
           placeholderTextColor="rgba(255,255,255,0.3)"
           style={styles.heroAmountInput}
           autoFocus={!expense}
+          caretHidden={true}
+          cursorColor="transparent"
         />
         <Text style={styles.heroAmountHint}>Enter the total paid bill</Text>
       </View>
@@ -145,10 +155,10 @@ export default function ExpenseFormScreen({ route, navigation }: Props<'ExpenseF
         />
       </View>
 
-      {/* 3. Category Selector */}
+      {/* 3. Category Selector (Wrapped, non-scrollable) */}
       <View style={styles.formSection}>
         <Text style={styles.sectionLabel}>CATEGORY</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
           {CATEGORIES.map((c) => {
             const active = category === c.key;
             return (
@@ -164,7 +174,7 @@ export default function ExpenseFormScreen({ route, navigation }: Props<'ExpenseF
               </Pressable>
             );
           })}
-        </ScrollView>
+        </View>
       </View>
 
       {/* 4. Who Paid? */}
@@ -298,7 +308,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     minWidth: 200,
     borderWidth: 0,
-    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none', outlineWidth: 0 } as any) : {}),
+    ...(Platform.OS === 'web'
+      ? ({ outlineStyle: 'none', outlineWidth: 0, caretColor: 'transparent' } as any)
+      : { cursorColor: 'transparent' }),
   },
   heroAmountHint: {
     color: 'rgba(255,255,255,0.5)',

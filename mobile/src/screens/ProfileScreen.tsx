@@ -100,6 +100,12 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
         </View>
       ) : null}
 
+      {/* Page Title in matching theme */}
+      <View style={{ marginBottom: space.md, paddingHorizontal: space.xs }}>
+        <Text style={type.caption}>PROFILE & IDENTITY</Text>
+        <Text style={[type.largeTitle, { fontSize: 26, marginTop: 2 }]}>Account Overview</Text>
+      </View>
+
       {/* User Info Card */}
       <Card style={styles.profileCard}>
         <View style={{ alignItems: 'center' }}>

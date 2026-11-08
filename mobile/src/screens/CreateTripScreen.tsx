@@ -309,6 +309,12 @@ export default function CreateTripScreen({ navigation }: Props<'CreateTrip'>) {
       contentContainerStyle={{ padding: space.lg, paddingBottom: 40 }}
       keyboardShouldPersistTaps="handled"
     >
+      {/* Section Header */}
+      <View style={{ marginBottom: space.lg }}>
+        <Text style={type.caption}>NEW ADVENTURE</Text>
+        <Text style={[type.largeTitle, { fontSize: 26, marginTop: 2 }]}>Create Trip</Text>
+      </View>
+
       <Field
         label="Trip name"
         value={name}

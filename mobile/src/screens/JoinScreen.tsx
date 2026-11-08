@@ -54,6 +54,12 @@ export default function JoinScreen({ route, navigation }: Props<'Join'>) {
 
   return (
     <ScrollView contentContainerStyle={{ padding: space.lg }} keyboardShouldPersistTaps="handled">
+      {/* Section Header */}
+      <View style={{ marginBottom: space.lg }}>
+        <Text style={type.caption}>JOIN A FRIEND</Text>
+        <Text style={[type.largeTitle, { fontSize: 26, marginTop: 2 }]}>Enter Trip Code</Text>
+      </View>
+
       <Field
         label="Invite link or code"
         value={input}

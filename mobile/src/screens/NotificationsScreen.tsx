@@ -102,23 +102,24 @@ export default function NotificationsScreen({ navigation }: Props<'Notifications
           />
         }
         ListHeaderComponent={
-          <View style={styles.headerStatusRow}>
-            <Text style={styles.headerSubtitle}>
-              {unreadCount > 0
-                ? `${unreadCount} unread update${unreadCount > 1 ? 's' : ''}`
-                : 'All notifications caught up'}
-            </Text>
-            {unreadCount > 0 ? (
-              <View style={styles.unreadStatusBadge}>
-                <View style={styles.statusDot} />
-                <Text style={styles.unreadStatusText}>UNREAD</Text>
+          <View style={styles.headerBox}>
+            <View style={styles.headerTitleRow}>
+              <View>
+                <Text style={type.caption}>UPDATES & ACTIVITY</Text>
+                <Text style={styles.headerTitle}>Notifications</Text>
               </View>
-            ) : (
-              <View style={styles.caughtUpBadge}>
-                <Ionicons name="checkmark-done" size={14} color="#059669" />
-                <Text style={styles.caughtUpText}>Caught Up</Text>
-              </View>
-            )}
+              {unreadCount > 0 ? (
+                <View style={styles.unreadStatusBadge}>
+                  <View style={styles.statusDot} />
+                  <Text style={styles.unreadStatusText}>{unreadCount} NEW</Text>
+                </View>
+              ) : (
+                <View style={styles.caughtUpBadge}>
+                  <Ionicons name="checkmark-done" size={14} color="#059669" />
+                  <Text style={styles.caughtUpText}>Caught Up</Text>
+                </View>
+              )}
+            </View>
           </View>
         }
         ListEmptyComponent={
@@ -199,17 +200,20 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     flexGrow: 1,
   },
-  headerStatusRow: {
+  headerBox: {
+    marginBottom: space.lg,
+  },
+  headerTitleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: space.md,
-    paddingHorizontal: 2,
+    alignItems: 'flex-end',
   },
-  headerSubtitle: {
-    fontSize: 12.5,
-    fontWeight: '600',
-    color: colors.muted,
+  headerTitle: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: colors.ink,
+    letterSpacing: -0.4,
+    marginTop: 2,
   },
   unreadStatusBadge: {
     flexDirection: 'row',

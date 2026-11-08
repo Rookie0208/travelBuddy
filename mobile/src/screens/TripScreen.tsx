@@ -1,10 +1,12 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Animated,
   KeyboardAvoidingView,
   Modal,
   Platform,
   Pressable,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -258,66 +260,8 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
   // ── Header ──────────────────────────────────────────────────────────────────
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: () =>
-        data ? (
-          <View style={{ alignItems: 'flex-start', justifyContent: 'center' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              {/* Trip Invite Code BEFORE the trip name */}
-              {data.inviteCode ? (
-                <View
-                  style={{
-                    backgroundColor: colors.primarySoft,
-                    paddingHorizontal: 6,
-                    paddingVertical: 1.5,
-                    borderRadius: radius.sm,
-                    borderWidth: 1,
-                    borderColor: 'rgba(13, 56, 42, 0.15)',
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 11,
-                      fontWeight: '800',
-                      color: colors.primaryDark,
-                      letterSpacing: 0.8,
-                    }}
-                  >
-                    {data.inviteCode}
-                  </Text>
-                </View>
-              ) : null}
-
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: '800',
-                  color: colors.ink,
-                  letterSpacing: -0.3,
-                  maxWidth: 130,
-                }}
-                numberOfLines={1}
-              >
-                {data.name}
-              </Text>
-              <View
-                style={{
-                  width: 7,
-                  height: 7,
-                  borderRadius: 3.5,
-                  backgroundColor: data.status === 'ACTIVE' ? '#10B981' : colors.muted,
-                }}
-              />
-            </View>
-            {data.destination ? (
-              <Text
-                style={{ fontSize: 11, color: colors.muted, fontWeight: '500', marginTop: 1, maxWidth: 180 }}
-                numberOfLines={1}
-              >
-                {data.destination}
-              </Text>
-            ) : null}
-          </View>
-        ) : null,
+      title: '',
+      headerTitle: () => null,
       headerRight: () =>
         data ? (
           <View
@@ -326,7 +270,7 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
               alignItems: 'center',
               gap: 8,
               marginRight: Platform.OS === 'ios' ? space.sm : space.md,
-              paddingRight: Platform.OS === 'web' ? 4 : 0,
+              paddingRight: Platform.OS === 'web' ? 6 : 0,
             }}
           >
             {/* Add person (owner only) */}
@@ -408,6 +352,50 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
+      {/* ── Top Trip Overview Banner: Trip Name & Invite Code directly below it ── */}
+      <View style={styles.tripBannerCard}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ flex: 1, paddingRight: space.sm }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={styles.tripBannerName} numberOfLines={1}>{data.name}</Text>
+              <View style={[styles.statusDot, { backgroundColor: data.status === 'ACTIVE' ? '#10B981' : colors.muted }]} />
+            </View>
+
+            {/* Just below the trip name: trip invite code */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4, flexWrap: 'wrap' }}>
+              <View style={styles.inviteCodeBadge}>
+                <Ionicons name="key-outline" size={12} color={colors.primaryDark} />
+                <Text style={styles.inviteCodeBadgeText}>
+                  CODE: {data.inviteCode ?? 'ACTIVE'}
+                </Text>
+              </View>
+              {data.destination ? (
+                <Text style={styles.tripBannerDest} numberOfLines={1}>• {data.destination}</Text>
+              ) : null}
+            </View>
+          </View>
+
+          {/* Quick Copy Code Button */}
+          {data.inviteCode ? (
+            <TouchableOpacity
+              onPress={() => {
+                if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
+                  navigator.clipboard.writeText(data.inviteCode!);
+                  alert(`Invite Code ${data.inviteCode} copied to clipboard!`);
+                } else {
+                  Alert.alert('Trip Invite Code', `Share this code with your friends:\n\n${data.inviteCode}`);
+                }
+              }}
+              style={styles.copyCodeButton}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="copy-outline" size={13} color={colors.primaryDark} />
+              <Text style={styles.copyCodeButtonText}>Copy</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      </View>
+
       {/* ── Tab content ─────────────────────────────────────────── */}
       <View style={{ flex: 1, paddingBottom: 72 }}>
         {tab === 'expenses' && <ExpensesTab trip={data} navigation={navigation} />}
@@ -636,3 +624,63 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  tripBannerCard: {
+    backgroundColor: colors.card,
+    paddingHorizontal: space.lg,
+    paddingVertical: space.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lineLight,
+    ...shadows.sm,
+  },
+  tripBannerName: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.ink,
+    letterSpacing: -0.4,
+  },
+  statusDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+  },
+  inviteCodeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.primarySoft,
+    paddingHorizontal: 8,
+    paddingVertical: 2.5,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(13, 56, 42, 0.15)',
+  },
+  inviteCodeBadgeText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: colors.primaryDark,
+    letterSpacing: 0.8,
+  },
+  tripBannerDest: {
+    fontSize: 12,
+    color: colors.muted,
+    fontWeight: '500',
+  },
+  copyCodeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.lineLight,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: colors.line,
+  },
+  copyCodeButtonText: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: colors.primaryDark,
+  },
+});

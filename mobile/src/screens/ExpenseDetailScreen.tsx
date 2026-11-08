@@ -67,6 +67,11 @@ export default function ExpenseDetailScreen({ route, navigation }: Props<'Expens
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={{ marginBottom: space.md }}>
+            <View style={{ marginBottom: space.md, paddingHorizontal: space.xs }}>
+              <Text style={type.caption}>TRANSACTION DETAILS</Text>
+              <Text style={[type.largeTitle, { fontSize: 26, marginTop: 2 }]}>Expense Summary</Text>
+            </View>
+
             {/* 1. Digital Receipt Card */}
             <View style={styles.receiptCard}>
               <View style={styles.receiptTop}>

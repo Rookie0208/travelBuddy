@@ -94,13 +94,13 @@ export default function RootNavigator() {
         {user ? (
           <>
             <Stack.Screen name="Trips" component={TripsScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="CreateTrip" component={CreateTripScreen} options={{ title: 'New Trip' }} />
+            <Stack.Screen name="CreateTrip" component={CreateTripScreen} options={{ title: '' }} />
             <Stack.Screen name="Trip" component={TripScreen} options={{ title: '' }} />
-            <Stack.Screen name="ExpenseForm" component={ExpenseFormScreen} options={{ title: 'Expense' }} />
-            <Stack.Screen name="ExpenseDetail" component={ExpenseDetailScreen} options={{ title: 'Expense Details' }} />
-            <Stack.Screen name="Join" component={JoinScreen} options={{ title: 'Join Trip' }} />
-            <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Updates & Activity' }} />
-            <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
+            <Stack.Screen name="ExpenseForm" component={ExpenseFormScreen} options={{ title: '' }} />
+            <Stack.Screen name="ExpenseDetail" component={ExpenseDetailScreen} options={{ title: '' }} />
+            <Stack.Screen name="Join" component={JoinScreen} options={{ title: '' }} />
+            <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: '' }} />
+            <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: '' }} />
           </>
         ) : (
           <>

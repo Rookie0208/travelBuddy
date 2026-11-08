@@ -98,6 +98,11 @@ public class TripService {
                         m.getCreatedAt()))
                 .toList();
 
+        if (t.getInviteCode() == null || t.getInviteCode().isBlank()) {
+            t.setInviteCode(generateUniqueInviteCode());
+            trips.save(t);
+        }
+
         return new TripDetail(t.getId(), t.getName(), t.getDestination(), t.getStartDate(), t.getEndDate(), t.getNotes(),
                 t.getCurrency(), t.getStatus(), me.getId(), me.getRole(),
                 t.getInviteCode(), memberDtos, pending);
