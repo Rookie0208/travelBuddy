@@ -27,9 +27,8 @@ import ExpensesTab from './trip/ExpensesTab';
 import BalancesTab from './trip/BalancesTab';
 import HistoryTab from './trip/HistoryTab';
 import MembersTab from './trip/MembersTab';
-import AnalyticsTab from './trip/AnalyticsTab';
 
-type TabKey = 'expenses' | 'analytics' | 'balances' | 'members' | 'history';
+type TabKey = 'expenses' | 'balances' | 'members' | 'history';
 
 // ─── File action sheet modal ─────────────────────────────────────────────────
 function FileActionsSheet({
@@ -296,6 +295,26 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
               </Pressable>
             ) : null}
 
+            {/* Analytics button */}
+            <Pressable
+              onPress={() => navigation.navigate('TripAnalytics', { tripId: data.id })}
+              accessibilityLabel="Trip Analytics"
+              hitSlop={8}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 18,
+                backgroundColor: colors.card,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: colors.lineLight,
+                ...shadows.sm,
+              }}
+            >
+              <Ionicons name="stats-chart-outline" size={17} color={colors.primary} />
+            </Pressable>
+
             {/* Excel button (icon only) with proper right spacing */}
             <Pressable
               onPress={() => setFileSheetOpen(true)}
@@ -405,7 +424,6 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
       {/* ── Tab content ─────────────────────────────────────────── */}
       <View style={{ flex: 1, paddingBottom: 72 }}>
         {tab === 'expenses' && <ExpensesTab trip={data} navigation={navigation} />}
-        {tab === 'analytics' && <AnalyticsTab trip={data} />}
         {tab === 'balances' && <BalancesTab trip={data} />}
         {tab === 'members' && <MembersTab trip={data} navigation={navigation} />}
         {tab === 'history' && <HistoryTab trip={data} />}
@@ -416,15 +434,15 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
         style={{
           position: 'absolute',
           bottom: Platform.OS === 'ios' ? 24 : 14,
-          left: space.sm,
-          right: space.sm,
+          left: space.md,
+          right: space.md,
           backgroundColor: '#0A1813',
           borderRadius: radius.full,
           height: 60,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-around',
-          paddingHorizontal: 4,
+          paddingHorizontal: 6,
           borderWidth: 1.5,
           borderColor: '#1D3B2E',
           shadowColor: '#000',
@@ -442,44 +460,44 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
         >
           <View
             style={{
-              minWidth: 40,
+              minWidth: 46,
               height: 38,
               borderRadius: radius.full,
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: tab === 'expenses' ? '#D4FF00' : 'transparent',
-              paddingHorizontal: 6,
+              paddingHorizontal: 8,
             }}
           >
             <Ionicons
               name={tab === 'expenses' ? 'receipt' : 'receipt-outline'}
-              size={20}
+              size={21}
               color={tab === 'expenses' ? '#08251C' : 'rgba(255,255,255,0.6)'}
             />
           </View>
         </Pressable>
 
-        {/* Tab 2: Analytics */}
+        {/* Tab 2: Balances */}
         <Pressable
-          onPress={() => setTab('analytics')}
+          onPress={() => setTab('balances')}
           style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 4 }}
           hitSlop={8}
         >
           <View
             style={{
-              minWidth: 40,
+              minWidth: 46,
               height: 38,
               borderRadius: radius.full,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: tab === 'analytics' ? '#D4FF00' : 'transparent',
-              paddingHorizontal: 6,
+              backgroundColor: tab === 'balances' ? '#D4FF00' : 'transparent',
+              paddingHorizontal: 8,
             }}
           >
             <Ionicons
-              name={tab === 'analytics' ? 'stats-chart' : 'stats-chart-outline'}
-              size={20}
-              color={tab === 'analytics' ? '#08251C' : 'rgba(255,255,255,0.6)'}
+              name={tab === 'balances' ? 'scale' : 'scale-outline'}
+              size={21}
+              color={tab === 'balances' ? '#08251C' : 'rgba(255,255,255,0.6)'}
             />
           </View>
         </Pressable>
@@ -493,13 +511,13 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
           }}
           activeOpacity={0.85}
           style={{
-            width: 50,
-            height: 50,
-            borderRadius: 25,
+            width: 54,
+            height: 54,
+            borderRadius: 27,
             backgroundColor: '#D4FF00',
             alignItems: 'center',
             justifyContent: 'center',
-            marginTop: -18,
+            marginTop: -20,
             borderWidth: 3.5,
             borderColor: '#0A1813',
             shadowColor: '#D4FF00',
@@ -509,35 +527,10 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
             elevation: 14,
           }}
         >
-          <Ionicons name="add" size={28} color="#08251C" />
+          <Ionicons name="add" size={30} color="#08251C" />
         </TouchableOpacity>
 
-        {/* Tab 3: Balances */}
-        <Pressable
-          onPress={() => setTab('balances')}
-          style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 4 }}
-          hitSlop={8}
-        >
-          <View
-            style={{
-              minWidth: 40,
-              height: 38,
-              borderRadius: radius.full,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: tab === 'balances' ? '#D4FF00' : 'transparent',
-              paddingHorizontal: 6,
-            }}
-          >
-            <Ionicons
-              name={tab === 'balances' ? 'scale' : 'scale-outline'}
-              size={20}
-              color={tab === 'balances' ? '#08251C' : 'rgba(255,255,255,0.6)'}
-            />
-          </View>
-        </Pressable>
-
-        {/* Tab 4: Members */}
+        {/* Tab 3: Members */}
         <Pressable
           onPress={() => setTab('members')}
           style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 4 }}
@@ -545,18 +538,18 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
         >
           <View
             style={{
-              minWidth: 40,
+              minWidth: 46,
               height: 38,
               borderRadius: radius.full,
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: tab === 'members' ? '#D4FF00' : 'transparent',
-              paddingHorizontal: 6,
+              paddingHorizontal: 8,
             }}
           >
             <Ionicons
               name={tab === 'members' ? 'people' : 'people-outline'}
-              size={20}
+              size={21}
               color={tab === 'members' ? '#08251C' : 'rgba(255,255,255,0.6)'}
             />
             {pending > 0 && (
@@ -582,7 +575,7 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
           </View>
         </Pressable>
 
-        {/* Tab 5: History */}
+        {/* Tab 4: History */}
         <Pressable
           onPress={() => setTab('history')}
           style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 4 }}
@@ -590,18 +583,18 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
         >
           <View
             style={{
-              minWidth: 40,
+              minWidth: 46,
               height: 38,
               borderRadius: radius.full,
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: tab === 'history' ? '#D4FF00' : 'transparent',
-              paddingHorizontal: 6,
+              paddingHorizontal: 8,
             }}
           >
             <Ionicons
               name={tab === 'history' ? 'time' : 'time-outline'}
-              size={20}
+              size={21}
               color={tab === 'history' ? '#08251C' : 'rgba(255,255,255,0.6)'}
             />
           </View>

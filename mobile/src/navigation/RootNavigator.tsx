@@ -15,6 +15,7 @@ import VerifyEmailScreen from '../screens/VerifyEmailScreen';
 import TripsScreen from '../screens/TripsScreen';
 import CreateTripScreen from '../screens/CreateTripScreen';
 import TripScreen from '../screens/TripScreen';
+import TripAnalyticsScreen from '../screens/TripAnalyticsScreen';
 import ExpenseFormScreen from '../screens/ExpenseFormScreen';
 import ExpenseDetailScreen from '../screens/ExpenseDetailScreen';
 import JoinScreen from '../screens/JoinScreen';
@@ -96,6 +97,7 @@ export default function RootNavigator() {
             <Stack.Screen name="Trips" component={TripsScreen} options={{ headerShown: false }} />
             <Stack.Screen name="CreateTrip" component={CreateTripScreen} options={{ title: '' }} />
             <Stack.Screen name="Trip" component={TripScreen} options={{ title: '' }} />
+            <Stack.Screen name="TripAnalytics" component={TripAnalyticsScreen} options={{ title: '' }} />
             <Stack.Screen name="ExpenseForm" component={ExpenseFormScreen} options={{ title: '' }} />
             <Stack.Screen name="ExpenseDetail" component={ExpenseDetailScreen} options={{ title: '' }} />
             <Stack.Screen name="Join" component={JoinScreen} options={{ title: '' }} />

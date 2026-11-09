@@ -8,6 +8,7 @@ export type RootStackParamList = {
   Trips: undefined;
   CreateTrip: undefined;
   Trip: { tripId: string };
+  TripAnalytics: { tripId: string };
   ExpenseForm: { tripId: string; expense?: Expense };
   ExpenseDetail: { tripId: string; expense: Expense };
   Join: { code?: string } | undefined;

@@ -162,6 +162,144 @@ function TripCard({ item, onPress }: { item: TripSummary; onPress: () => void })
   );
 }
 
+// ─── Track Expense / Expense Manager Card ────────────────────────────────────
+function TrackExpenseTripCard({
+  item,
+  onSeeAnalytics,
+  onOpenTrip,
+}: {
+  item: TripSummary;
+  onSeeAnalytics: () => void;
+  onOpenTrip: () => void;
+}) {
+  const status = getTripStatus(item);
+  const isSettled = status === 'settled';
+
+  const subtitle = [
+    item.destination,
+    item.startDate ? formatDate(item.startDate) : null,
+    item.endDate && item.endDate !== item.startDate ? `– ${formatDate(item.endDate)}` : null,
+  ]
+    .filter(Boolean)
+    .join(' • ');
+
+  const statsQuery = useQuery({
+    queryKey: ['trip-stats', item.id],
+    queryFn: () => endpoints.ledger.stats(item.id),
+  });
+
+  const stats = statsQuery.data;
+  const currency = item.currency || stats?.currency || 'INR';
+
+  const memberCount = Math.max(item.memberCount || 1, 1);
+  const perPersonShare = Math.round(item.totalSpentPaise / memberCount);
+  const txCount = stats ? stats.totalExpensesCount : (statsQuery.isLoading ? '...' : 0);
+  const avgExpense = stats ? stats.averageExpensePaise : 0;
+  const dailyBurn = stats ? stats.dailyAveragePaise : 0;
+
+  return (
+    <View style={[styles.expenseManagerCard, isSettled && styles.tripCardSettled]}>
+      {/* Top Row: Status, Owner, Title, Total Spent */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <View style={{ flex: 1, paddingRight: space.sm }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+            <StatusChip status={status} />
+            {item.owner && (
+              <View style={styles.ownerBadge}>
+                <Text style={styles.ownerBadgeText}>OWNER</Text>
+              </View>
+            )}
+          </View>
+          <TouchableOpacity onPress={onOpenTrip} activeOpacity={0.7}>
+            <Text style={styles.tripCardTitle} numberOfLines={1}>
+              {item.name}
+            </Text>
+          </TouchableOpacity>
+          {subtitle ? (
+            <Text style={styles.tripCardSubtitle} numberOfLines={1}>
+              {subtitle}
+            </Text>
+          ) : null}
+        </View>
+
+        {/* Total Spent Pill */}
+        <View style={styles.spentHighlightBlock}>
+          <Text style={styles.tripCardAmountLabel}>TOTAL SPENT</Text>
+          <Text style={[styles.spentHighlightAmount, isSettled && { color: colors.muted }]}>
+            {formatPaise(item.totalSpentPaise, currency)}
+          </Text>
+        </View>
+      </View>
+
+      {/* 4-Box Key Metrics Grid */}
+      <View style={styles.expenseMetricsGrid}>
+        {/* Metric 1: Per Person Share */}
+        <View style={styles.expenseMetricBox}>
+          <Text style={styles.expenseMetricBoxLabel}>Per Person Share</Text>
+          <Text style={styles.expenseMetricBoxValue} numberOfLines={1}>
+            {formatPaise(perPersonShare, currency)}
+          </Text>
+          <Text style={styles.expenseMetricBoxSub}>
+            {memberCount} {memberCount === 1 ? 'member' : 'members'}
+          </Text>
+        </View>
+
+        {/* Metric 2: Transactions */}
+        <View style={styles.expenseMetricBox}>
+          <Text style={styles.expenseMetricBoxLabel}>No. of Transactions</Text>
+          <Text style={styles.expenseMetricBoxValue} numberOfLines={1}>
+            {txCount}
+          </Text>
+          <Text style={styles.expenseMetricBoxSub}>entries logged</Text>
+        </View>
+
+        {/* Metric 3: Avg Expense */}
+        <View style={styles.expenseMetricBox}>
+          <Text style={styles.expenseMetricBoxLabel}>Avg Expense</Text>
+          <Text style={styles.expenseMetricBoxValue} numberOfLines={1}>
+            {stats ? formatPaise(avgExpense, currency) : '...'}
+          </Text>
+          <Text style={styles.expenseMetricBoxSub}>per transaction</Text>
+        </View>
+
+        {/* Metric 4: Daily Burn */}
+        <View style={styles.expenseMetricBox}>
+          <Text style={styles.expenseMetricBoxLabel}>Daily Burn</Text>
+          <Text style={styles.expenseMetricBoxValue} numberOfLines={1}>
+            {stats ? formatPaise(dailyBurn, currency) : '...'}
+          </Text>
+          <Text style={styles.expenseMetricBoxSub}>burn rate / day</Text>
+        </View>
+      </View>
+
+      {/* Card Action Footer: Member Avatars & See Analytics Button */}
+      <View style={styles.expenseManagerCardFooter}>
+        <TouchableOpacity
+          onPress={onOpenTrip}
+          activeOpacity={0.75}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, flex: 1 }}
+        >
+          <AvatarStack count={item.memberCount} seed={item.name} />
+          <Text style={styles.memberCountText}>
+            {item.memberCount} {item.memberCount === 1 ? 'member' : 'members'}
+          </Text>
+        </TouchableOpacity>
+
+        {/* "See Analytics" Button */}
+        <TouchableOpacity
+          onPress={onSeeAnalytics}
+          activeOpacity={0.85}
+          style={styles.seeAnalyticsButton}
+        >
+          <Ionicons name="stats-chart" size={13} color="#08251C" />
+          <Text style={styles.seeAnalyticsButtonText}>See Analytics</Text>
+          <Ionicons name="arrow-forward" size={12} color="#08251C" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
 // ─── Floating Action Button ──────────────────────────────────────────────────
 function FAB({ onNewTrip, onJoin }: { onNewTrip: () => void; onJoin: () => void }) {
   const [open, setOpen] = useState(false);
@@ -529,60 +667,53 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
             )}
           </>
         ) : (
-          /* Expense Stats View with "Upcoming Module" Tag - Simpler, clean & pleasant UI */
-          <View style={styles.statsContainer}>
-            <View style={styles.upcomingHeroCard}>
-              <View style={styles.upcomingBadgeRow}>
-                <View style={styles.upcomingBadge}>
-                  <View style={styles.voltPillDot} />
-                  <Text style={styles.upcomingBadgeText}>UPCOMING MODULE</Text>
-                </View>
-                <Ionicons name="sparkles-outline" size={18} color={colors.primary} />
+          /* Track Expenses / Expense Manager Section */
+          <View style={{ gap: space.md }}>
+            <View style={[styles.sectionHeader, { marginTop: space.xs }]}>
+              <View>
+                <Text style={type.caption}>EXPENSE MANAGER & ANALYTICS</Text>
+                <Text style={styles.analyticsSubtext}>
+                  Detailed spending, metrics, & per-trip analytics
+                </Text>
               </View>
-
-              <Text style={styles.upcomingTitle}>Spending Analytics & Insights</Text>
-              <Text style={styles.upcomingSubtitle}>
-                Clear breakdowns, category charts, and budget trends across all your trips will appear here soon.
-              </Text>
-
-              <View style={styles.upcomingDivider} />
-
-              <View style={styles.upcomingFeatureList}>
-                <View style={styles.upcomingFeatureItem}>
-                  <View style={[styles.upcomingFeatureIconCircle, { backgroundColor: '#F0FDF4' }]}>
-                    <Ionicons name="pie-chart-outline" size={18} color="#16A34A" />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.upcomingFeatureTitle}>Category Spend</Text>
-                    <Text style={styles.upcomingFeatureDesc}>Automated tagging for food, stays, flights, and activities.</Text>
-                  </View>
-                </View>
-
-                <View style={styles.upcomingFeatureItem}>
-                  <View style={[styles.upcomingFeatureIconCircle, { backgroundColor: '#EFF6FF' }]}>
-                    <Ionicons name="trending-up-outline" size={18} color="#2563EB" />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.upcomingFeatureTitle}>Balances & Trends</Text>
-                    <Text style={styles.upcomingFeatureDesc}>Track pending dues and overall debt settlement flows.</Text>
-                  </View>
-                </View>
-
-                <View style={styles.upcomingFeatureItem}>
-                  <View style={[styles.upcomingFeatureIconCircle, { backgroundColor: '#FFF7ED' }]}>
-                    <Ionicons name="document-text-outline" size={18} color="#EA580C" />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.upcomingFeatureTitle}>Reports & Export</Text>
-                    <Text style={styles.upcomingFeatureDesc}>Export clean PDF and Excel summaries for reimbursements.</Text>
-                  </View>
-                </View>
-              </View>
-
-              <View style={styles.upcomingCardFooter}>
-                <Text style={styles.upcomingCardFooterText}>Coming soon in v2.1</Text>
+              <View style={styles.filterTabs}>
+                <Pressable
+                  style={[styles.filterTab, filter === 'all' && styles.filterTabActive]}
+                  onPress={() => setFilter('all')}
+                >
+                  <Text style={[styles.filterTabText, filter === 'all' && styles.filterTabTextActive]}>All</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.filterTab, filter === 'ongoing' && styles.filterTabActive]}
+                  onPress={() => setFilter('ongoing')}
+                >
+                  <Text style={[styles.filterTabText, filter === 'ongoing' && styles.filterTabTextActive]}>Active</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.filterTab, filter === 'settled' && styles.filterTabActive]}
+                  onPress={() => setFilter('settled')}
+                >
+                  <Text style={[styles.filterTabText, filter === 'settled' && styles.filterTabTextActive]}>Settled</Text>
+                </Pressable>
               </View>
             </View>
+
+            {filteredTrips.length === 0 ? (
+              <EmptyState
+                icon="stats-chart-outline"
+                title="No trips to track"
+                hint="Create or join a trip to track and analyze expenses."
+              />
+            ) : (
+              filteredTrips.map(trip => (
+                <TrackExpenseTripCard
+                  key={trip.id}
+                  item={trip}
+                  onOpenTrip={() => navigation.navigate('Trip', { tripId: trip.id })}
+                  onSeeAnalytics={() => navigation.navigate('TripAnalytics', { tripId: trip.id })}
+                />
+              ))
+            )}
           </View>
         )}
       </ScrollView>
@@ -639,7 +770,7 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
               dashboardTab === 'stats' && styles.dashboardDockBtnTextActive,
             ]}
           >
-            Expense Stats
+            Track Expenses
           </Text>
         </TouchableOpacity>
       </View>
@@ -1119,6 +1250,95 @@ const styles = StyleSheet.create({
   dashboardDockBtnTextActive: {
     color: '#08251C',
     fontWeight: '800',
+  },
+
+  // ─── Expense Manager / Track Expenses Card ────────────────────────────────
+  expenseManagerCard: {
+    backgroundColor: colors.card,
+    borderRadius: radius.xl,
+    padding: space.lg,
+    marginBottom: space.md,
+    borderWidth: 1,
+    borderColor: colors.lineLight,
+    ...shadows.sm,
+  },
+  spentHighlightBlock: {
+    alignItems: 'flex-end',
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  spentHighlightAmount: {
+    fontSize: 16.5,
+    fontWeight: '800',
+    color: colors.primary,
+  },
+  expenseMetricsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: space.md,
+  },
+  expenseMetricBox: {
+    flex: 1,
+    minWidth: '46%',
+    backgroundColor: '#F8FAFC',
+    borderRadius: radius.md,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  expenseMetricBoxLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: colors.muted,
+    marginBottom: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+  },
+  expenseMetricBoxValue: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: colors.ink,
+  },
+  expenseMetricBoxSub: {
+    fontSize: 10,
+    color: colors.subtle,
+    marginTop: 2,
+  },
+  expenseManagerCardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: space.md,
+    paddingTop: space.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.lineLight,
+  },
+  seeAnalyticsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: '#D4FF00',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: '#0A1813',
+    shadowColor: '#D4FF00',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  seeAnalyticsButtonText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#08251C',
+    letterSpacing: 0.2,
   },
 
   // ─── Upcoming Module (Stats Tab) ──────────────────────────────────────────
