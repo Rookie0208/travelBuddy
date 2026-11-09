@@ -58,7 +58,39 @@ export interface Balances {
   currency: string; status: TripStatus; totalSpentPaise: number; members: Balance[];
   suggested: Transfer[]; settlements: Settlement[]; allSettled: boolean;
 }
-export interface Stats { currency: string; totalSpentPaise: number; byCategory: Record<string, number>; byDay: Record<string, number> }
+export interface MemberSpending {
+  memberId: string;
+  name: string;
+  paidPaise: number;
+  sharePaise: number;
+  netPaise: number;
+  paidPercent: number;
+  sharePercent: number;
+}
+
+export interface TopExpense {
+  id: string;
+  title: string;
+  category: string;
+  amountPaise: number;
+  paidByName: string;
+  date: string;
+}
+
+export interface Stats {
+  currency: string;
+  totalSpentPaise: number;
+  myPaidPaise: number;
+  mySharePaise: number;
+  myNetPaise: number;
+  totalExpensesCount: number;
+  averageExpensePaise: number;
+  dailyAveragePaise: number;
+  byCategory: Record<string, number>;
+  byDay: Record<string, number>;
+  memberSpending: MemberSpending[];
+  topExpenses: TopExpense[];
+}
 
 export interface AppNotification { id: string; tripId: string | null; message: string; seen: boolean; createdAt: string }
 export interface NotificationPage { items: AppNotification[]; unread: number; page: number; size: number; total: number }

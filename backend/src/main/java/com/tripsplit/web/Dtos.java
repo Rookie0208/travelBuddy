@@ -92,6 +92,12 @@ public final class Dtos {
     public record BalancesResponse(String currency, TripStatus status, long totalSpentPaise,
                                    List<BalanceDto> members, List<TransferDto> suggested,
                                    List<SettlementDto> settlements, boolean allSettled) {}
-    public record StatsResponse(String currency, long totalSpentPaise, Map<String, Long> byCategory,
-                                Map<LocalDate, Long> byDay) {}
+    public record MemberSpendingDto(UUID memberId, String name, long paidPaise, long sharePaise, long netPaise,
+                                    double paidPercent, double sharePercent) {}
+    public record TopExpenseDto(UUID id, String title, String category, long amountPaise, String paidByName,
+                                LocalDate date) {}
+    public record StatsResponse(String currency, long totalSpentPaise, long myPaidPaise, long mySharePaise,
+                                long myNetPaise, int totalExpensesCount, long averageExpensePaise,
+                                long dailyAveragePaise, Map<String, Long> byCategory, Map<LocalDate, Long> byDay,
+                                List<MemberSpendingDto> memberSpending, List<TopExpenseDto> topExpenses) {}
 }

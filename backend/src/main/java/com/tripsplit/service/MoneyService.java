@@ -134,18 +134,83 @@ public class MoneyService {
 
     @Transactional(readOnly = true)
     public StatsResponse stats(UUID tripId, UUID userId) {
-        access.member(tripId, userId);
+        Member me = access.member(tripId, userId);
         Trip trip = access.trip(tripId);
+        Map<UUID, Member> byId = access.membersById(tripId);
         List<Expense> live = expenses.findByTripIdAndDeletedAtIsNull(tripId);
+        List<ExpenseSplit> liveSplits = live.isEmpty() ? List.of()
+                : splits.findByExpenseIdIn(live.stream().map(Expense::getId).toList());
+        List<Settlement> sets = settlements.findByTripIdOrderByCreatedAtAsc(tripId);
+
+        List<UUID> activeIds = byId.values().stream()
+                .filter(m -> m.getStatus() == MemberStatus.ACTIVE).map(Member::getId).toList();
+        Map<UUID, MemberBalance> bal = BalanceCalculator.compute(activeIds, live, liveSplits, sets);
+
         Map<String, Long> byCategory = new TreeMap<>();
         Map<LocalDate, Long> byDay = new TreeMap<>();
         long total = 0;
         for (Expense e : live) {
             total += e.getAmountPaise();
-            byCategory.merge(e.getCategory(), e.getAmountPaise(), Long::sum);
+            byCategory.merge(e.getCategory() == null || e.getCategory().isBlank() ? "Other" : e.getCategory(),
+                    e.getAmountPaise(), Long::sum);
             byDay.merge(e.getExpenseDate(), e.getAmountPaise(), Long::sum);
         }
-        return new StatsResponse(trip.getCurrency(), total, byCategory, byDay);
+
+        MemberBalance myBal = bal.get(me.getId());
+        long myPaid = myBal != null ? myBal.paid() : 0L;
+        long myShare = myBal != null ? myBal.share() : 0L;
+        long myNet = myBal != null ? myBal.net() : 0L;
+
+        int totalCount = live.size();
+        long avgExpense = totalCount > 0 ? total / totalCount : 0L;
+        long dailyAvg = byDay.isEmpty() ? 0L : total / byDay.size();
+
+        final long grandTotal = total;
+        List<MemberSpendingDto> memberSpending = bal.values().stream()
+                .map(b -> {
+                    double paidPct = grandTotal > 0 ? (double) b.paid() * 100.0 / grandTotal : 0.0;
+                    double sharePct = grandTotal > 0 ? (double) b.share() * 100.0 / grandTotal : 0.0;
+                    return new MemberSpendingDto(
+                            b.memberId(),
+                            TripAccess.nameOf(byId, b.memberId()),
+                            b.paid(),
+                            b.share(),
+                            b.net(),
+                            Math.round(paidPct * 10.0) / 10.0,
+                            Math.round(sharePct * 10.0) / 10.0
+                    );
+                })
+                .sorted(Comparator.comparingLong(MemberSpendingDto::sharePaise).reversed()
+                        .thenComparing(MemberSpendingDto::name, String.CASE_INSENSITIVE_ORDER))
+                .toList();
+
+        List<TopExpenseDto> topExpenses = live.stream()
+                .sorted(Comparator.comparingLong(Expense::getAmountPaise).reversed())
+                .limit(5)
+                .map(e -> new TopExpenseDto(
+                        e.getId(),
+                        e.getTitle(),
+                        e.getCategory() == null || e.getCategory().isBlank() ? "Other" : e.getCategory(),
+                        e.getAmountPaise(),
+                        TripAccess.nameOf(byId, e.getPaidBy()),
+                        e.getExpenseDate()
+                ))
+                .toList();
+
+        return new StatsResponse(
+                trip.getCurrency(),
+                total,
+                myPaid,
+                myShare,
+                myNet,
+                totalCount,
+                avgExpense,
+                dailyAvg,
+                byCategory,
+                byDay,
+                memberSpending,
+                topExpenses
+        );
     }
 
     /** A comment or a query (question) that everyone in the trip can see. */
