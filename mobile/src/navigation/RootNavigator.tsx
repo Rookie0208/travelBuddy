@@ -21,6 +21,7 @@ import ExpenseDetailScreen from '../screens/ExpenseDetailScreen';
 import JoinScreen from '../screens/JoinScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import SpendingAnalyticsScreen from '../screens/SpendingAnalyticsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const navRef = createNavigationContainerRef<RootStackParamList>();
@@ -103,6 +104,7 @@ export default function RootNavigator() {
             <Stack.Screen name="Join" component={JoinScreen} options={{ title: '' }} />
             <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: '' }} />
             <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: '' }} />
+            <Stack.Screen name="SpendingAnalytics" component={SpendingAnalyticsScreen} options={{ title: 'Spending Analytics' }} />
           </>
         ) : (
           <>

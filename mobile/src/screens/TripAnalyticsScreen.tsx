@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as endpoints from '../api/endpoints';
 import { errorMessage } from '../api/client';
 import { ErrorState, Loading } from '../components/ui';
@@ -9,6 +10,7 @@ import AnalyticsTab from './trip/AnalyticsTab';
 import { colors, space, type } from '../theme';
 
 export default function TripAnalyticsScreen({ route }: Props<'TripAnalytics'>) {
+  const insets = useSafeAreaInsets();
   const { tripId } = route.params;
 
   const tripQuery = useQuery({
@@ -29,7 +31,7 @@ export default function TripAnalyticsScreen({ route }: Props<'TripAnalytics'>) {
   const trip = tripQuery.data;
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { paddingBottom: Math.max(insets.bottom, 12) }]}>
       {/* Consistent Velto Section Header */}
       <View style={styles.header}>
         <Text style={type.caption}>TRIP ANALYTICS</Text>
@@ -73,3 +75,4 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
+

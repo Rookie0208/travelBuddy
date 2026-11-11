@@ -20,6 +20,7 @@ import { Avatar, Chip, EmptyState, ErrorState, Loading, getCuteAvatar } from '..
 import { colors, radius, shadows, space, type } from '../theme';
 import { formatDate } from '../utils/format';
 import { formatPaise } from '../utils/money';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Props } from '../navigation/types';
 import type { TripSummary } from '../api/types';
 
@@ -192,10 +193,11 @@ function TrackExpenseTripCard({
   const currency = item.currency || stats?.currency || 'INR';
 
   const memberCount = Math.max(item.memberCount || 1, 1);
-  const perPersonShare = Math.round(item.totalSpentPaise / memberCount);
-  const txCount = stats ? stats.totalExpensesCount : (statsQuery.isLoading ? '...' : 0);
-  const avgExpense = stats ? stats.averageExpensePaise : 0;
-  const dailyBurn = stats ? stats.dailyAveragePaise : 0;
+  const totalSpent = typeof item.totalSpentPaise === 'number' && !isNaN(item.totalSpentPaise) ? item.totalSpentPaise : 0;
+  const perPersonShare = memberCount > 0 ? Math.round(totalSpent / memberCount) : 0;
+  const txCount = typeof stats?.totalExpensesCount === 'number' ? stats.totalExpensesCount : (statsQuery.isLoading ? '...' : 0);
+  const avgExpense = typeof stats?.averageExpensePaise === 'number' && !isNaN(stats.averageExpensePaise) ? stats.averageExpensePaise : 0;
+  const dailyBurn = typeof stats?.dailyAveragePaise === 'number' && !isNaN(stats.dailyAveragePaise) ? stats.dailyAveragePaise : 0;
 
   return (
     <View style={[styles.expenseManagerCard, isSettled && styles.tripCardSettled]}>
@@ -257,7 +259,7 @@ function TrackExpenseTripCard({
         <View style={styles.expenseMetricBox}>
           <Text style={styles.expenseMetricBoxLabel}>Avg Expense</Text>
           <Text style={styles.expenseMetricBoxValue} numberOfLines={1}>
-            {stats ? formatPaise(avgExpense, currency) : '...'}
+            {formatPaise(avgExpense, currency)}
           </Text>
           <Text style={styles.expenseMetricBoxSub}>per transaction</Text>
         </View>
@@ -266,7 +268,7 @@ function TrackExpenseTripCard({
         <View style={styles.expenseMetricBox}>
           <Text style={styles.expenseMetricBoxLabel}>Daily Burn</Text>
           <Text style={styles.expenseMetricBoxValue} numberOfLines={1}>
-            {stats ? formatPaise(dailyBurn, currency) : '...'}
+            {formatPaise(dailyBurn, currency)}
           </Text>
           <Text style={styles.expenseMetricBoxSub}>burn rate / day</Text>
         </View>
@@ -301,7 +303,15 @@ function TrackExpenseTripCard({
 }
 
 // ─── Floating Action Button ──────────────────────────────────────────────────
-function FAB({ onNewTrip, onJoin }: { onNewTrip: () => void; onJoin: () => void }) {
+function FAB({
+  onNewTrip,
+  onJoin,
+  bottomOffset = 84,
+}: {
+  onNewTrip: () => void;
+  onJoin: () => void;
+  bottomOffset?: number;
+}) {
   const [open, setOpen] = useState(false);
   const anim = useRef(new Animated.Value(0)).current;
 
@@ -397,7 +407,7 @@ function FAB({ onNewTrip, onJoin }: { onNewTrip: () => void; onJoin: () => void 
         <Pressable style={StyleSheet.absoluteFill} onPress={() => toggle(false)} />
       </Animated.View>
 
-      <View style={styles.fabContainer} pointerEvents="box-none">
+      <View style={[styles.fabContainer, { bottom: bottomOffset }]} pointerEvents="box-none">
         {/* Option: New Trip */}
         <FabOption
           label="New trip"
@@ -433,15 +443,27 @@ function FAB({ onNewTrip, onJoin }: { onNewTrip: () => void; onJoin: () => void 
 
 // ─── Main Dashboard Screen ───────────────────────────────────────────────────
 export default function TripsScreen({ navigation }: Props<'Trips'>) {
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const tripsQuery = useQuery({ queryKey: ['trips'], queryFn: endpoints.trips.list });
   const notesQuery = useQuery({ queryKey: ['notifications'], queryFn: endpoints.notifications.list });
+  const analyticsQuery = useQuery({
+    queryKey: ['userAnalytics', 'current'],
+    queryFn: () => endpoints.auth.analytics(),
+  });
   
   const [dashboardTab, setDashboardTab] = useState<'tripsplit' | 'stats'>('tripsplit');
   const [filter, setFilter] = useState<'all' | 'ongoing' | 'settled'>('all');
 
   const trips = tripsQuery.data ?? [];
   const unread = notesQuery.data?.unread ?? 0;
+  const currentWeek = analyticsQuery.data?.currentWeek;
+  const weeklySharePaise = currentWeek?.personalSharePaise ?? 0;
+  const weeklyPaidPaise = currentWeek?.myPaidPaise ?? 0;
+  const weeklyNetPaise = currentWeek?.netDuesPaise ?? 0;
+  const weeklyRangeLabel = currentWeek?.label || 'Current Week';
+  const weeklyStartDate = currentWeek?.startDate || '';
+  const weeklyEndDate = currentWeek?.endDate || '';
 
   // Analytics Computations
   const totalSpent = trips.reduce((sum, t) => sum + (t.totalSpentPaise || 0), 0);
@@ -473,7 +495,13 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
   return (
     <View style={styles.screen}>
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          {
+            paddingTop: Math.max(insets.top, 24) + space.sm,
+            paddingBottom: Math.max(insets.bottom, 14) + 90,
+          },
+        ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -481,6 +509,7 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
             onRefresh={() => {
               tripsQuery.refetch();
               notesQuery.refetch();
+              analyticsQuery.refetch();
             }}
           />
         }
@@ -529,8 +558,12 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
 
         {dashboardTab === 'tripsplit' ? (
           <>
-            {/* 2. Hero Card: Velto Virtual Credit Card UI */}
-            <View style={styles.heroCard}>
+            {/* 2. Hero Card: Clickable to open detailed weekly analytics */}
+            <TouchableOpacity
+              style={styles.heroCard}
+              activeOpacity={0.92}
+              onPress={() => navigation.navigate('SpendingAnalytics', { initialTab: 'week' })}
+            >
               <View style={styles.heroTopRow}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <View style={styles.chipGraphic}>
@@ -540,16 +573,21 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
                 </View>
                 <View style={styles.heroTag}>
                   <View style={styles.voltPillDot} />
-                  <Text style={styles.heroTagText}>TRIPSPLIT PASS</Text>
+                  <Text style={styles.heroTagText}>THIS WEEK ({weeklyRangeLabel.toUpperCase()})</Text>
                 </View>
               </View>
 
               <View style={styles.heroAmountContainer}>
-                <Text style={styles.heroAmountLabel}>PORTFOLIO SPEND</Text>
-                <Text style={styles.heroBalanceAmount}>{formatPaise(totalSpent, 'INR')}</Text>
+                <Text style={styles.heroAmountLabel}>THIS WEEK'S PERSONAL SHARE</Text>
+                <Text style={styles.heroBalanceAmount}>{formatPaise(weeklySharePaise, 'INR')}</Text>
+                {weeklyStartDate ? (
+                  <Text style={styles.heroDateRange}>
+                    Calculating since: {weeklyStartDate} to {weeklyEndDate}
+                  </Text>
+                ) : null}
               </View>
 
-              {/* Cardholder & Masked digits (Email only on Profile card) */}
+              {/* Cardholder & Masked digits */}
               <View style={styles.cardMidDetails}>
                 <View style={{ flex: 1, paddingRight: space.sm }}>
                   <Text style={styles.cardHolderLabel}>CARDHOLDER</Text>
@@ -567,7 +605,10 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
               <View style={styles.quickActionRow}>
                 <TouchableOpacity
                   style={styles.quickActionPrimary}
-                  onPress={() => navigation.navigate('CreateTrip')}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    navigation.navigate('CreateTrip');
+                  }}
                   activeOpacity={0.88}
                 >
                   <Ionicons name="add" size={18} color="#08251C" />
@@ -576,7 +617,10 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
 
                 <TouchableOpacity
                   style={styles.quickActionSecondary}
-                  onPress={() => navigation.navigate('Join')}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    navigation.navigate('Join');
+                  }}
                   activeOpacity={0.88}
                 >
                   <Ionicons name="key-outline" size={16} color="#D4FF00" />
@@ -585,14 +629,17 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
 
                 <TouchableOpacity
                   style={styles.quickActionGhost}
-                  onPress={() => navigation.navigate('Profile')}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    navigation.navigate('SpendingAnalytics', { initialTab: 'week' });
+                  }}
                   activeOpacity={0.88}
                 >
-                  <Ionicons name="card-outline" size={16} color="#fff" />
-                  <Text style={styles.quickActionGhostText}>Pass</Text>
+                  <Ionicons name="stats-chart-outline" size={16} color="#fff" />
+                  <Text style={styles.quickActionGhostText}>Analytics</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+            </TouchableOpacity>
 
             {/* 3. Analytics & Financial Pulse Overview */}
             <View style={styles.sectionHeader}>
@@ -669,14 +716,14 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
         ) : (
           /* Track Expenses / Expense Manager Section */
           <View style={{ gap: space.md }}>
-            <View style={[styles.sectionHeader, { marginTop: space.xs }]}>
+            <View style={{ marginTop: space.xs, gap: space.xs }}>
               <View>
                 <Text style={type.caption}>EXPENSE MANAGER & ANALYTICS</Text>
                 <Text style={styles.analyticsSubtext}>
                   Detailed spending, metrics, & per-trip analytics
                 </Text>
               </View>
-              <View style={styles.filterTabs}>
+              <View style={[styles.filterTabs, { alignSelf: 'flex-start', marginTop: 4 }]}>
                 <Pressable
                   style={[styles.filterTab, filter === 'all' && styles.filterTabActive]}
                   onPress={() => setFilter('all')}
@@ -721,13 +768,14 @@ export default function TripsScreen({ navigation }: Props<'Trips'>) {
       {/* Floating Action Button (Active on TripSplit tab) */}
       {dashboardTab === 'tripsplit' && (
         <FAB
+          bottomOffset={Math.max(insets.bottom, 12) + 84}
           onNewTrip={() => navigation.navigate('CreateTrip')}
           onJoin={() => navigation.navigate('Join')}
         />
       )}
 
       {/* Bottom Floating Navigation Dock */}
-      <View style={styles.dashboardDock}>
+      <View style={[styles.dashboardDock, { bottom: Math.max(insets.bottom, 12) + 12 }]}>
         <TouchableOpacity
           style={[
             styles.dashboardDockBtn,
@@ -959,11 +1007,63 @@ const styles = StyleSheet.create({
     marginTop: space.md,
     marginBottom: space.lg,
   },
+  tapStatsPill: {
+    backgroundColor: 'rgba(212, 255, 0, 0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.full,
+    borderWidth: 1,
+    borderColor: 'rgba(212, 255, 0, 0.3)',
+  },
+  tapStatsPillText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#D4FF00',
+    letterSpacing: 0.4,
+  },
   heroBalanceAmount: {
     color: '#FFFFFF',
     fontSize: 32,
     fontWeight: '800',
     letterSpacing: -0.6,
+  },
+  heroDateRange: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 11,
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  heroSubRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    paddingHorizontal: space.sm,
+    paddingVertical: 8,
+    borderRadius: radius.md,
+    marginBottom: space.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  heroSubCol: {
+    flex: 1,
+  },
+  heroSubLabel: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: '#8EA399',
+    letterSpacing: 0.5,
+  },
+  heroSubValue: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginTop: 2,
+  },
+  heroNetPositive: {
+    color: '#34D399',
+  },
+  heroNetNegative: {
+    color: '#F87171',
   },
   heroSubtitle: {
     color: 'rgba(255,255,255,0.65)',

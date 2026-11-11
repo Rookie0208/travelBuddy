@@ -22,6 +22,7 @@ import { capitalizeWords } from '../utils/format';
 import { ConfirmModal, ErrorState, Loading, PromptModal } from '../components/ui';
 import { invalidateTrip } from '../queries';
 import { colors, radius, shadows, space, type } from '../theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Props } from '../navigation/types';
 import ExpensesTab from './trip/ExpensesTab';
 import BalancesTab from './trip/BalancesTab';
@@ -134,6 +135,7 @@ function FileActionsSheet({
 
 // ─── Main screen ─────────────────────────────────────────────────────────────
 export default function TripScreen({ route, navigation }: Props<'Trip'>) {
+  const insets = useSafeAreaInsets();
   const { tripId } = route.params;
   const qc = useQueryClient();
   const [tab, setTab] = useState<TabKey>('expenses');
@@ -422,7 +424,7 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
       </View>
 
       {/* ── Tab content ─────────────────────────────────────────── */}
-      <View style={{ flex: 1, paddingBottom: 72 }}>
+      <View style={{ flex: 1, paddingBottom: Math.max(insets.bottom, 12) + 74 }}>
         {tab === 'expenses' && <ExpensesTab trip={data} navigation={navigation} />}
         {tab === 'balances' && <BalancesTab trip={data} />}
         {tab === 'members' && <MembersTab trip={data} navigation={navigation} />}
@@ -433,7 +435,7 @@ export default function TripScreen({ route, navigation }: Props<'Trip'>) {
       <View
         style={{
           position: 'absolute',
-          bottom: Platform.OS === 'ios' ? 24 : 14,
+          bottom: Math.max(insets.bottom, 12) + 12,
           left: space.md,
           right: space.md,
           backgroundColor: '#0A1813',

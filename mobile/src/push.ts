@@ -7,8 +7,8 @@ import { FEATURES } from './config/features';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: FEATURES.ENABLE_PUSH_NOTIFICATIONS,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
+    shouldPlaySound: FEATURES.ENABLE_PUSH_NOTIFICATIONS,
+    shouldSetBadge: FEATURES.ENABLE_PUSH_NOTIFICATIONS,
     shouldShowBanner: FEATURES.ENABLE_PUSH_NOTIFICATIONS,
     shouldShowList: FEATURES.ENABLE_PUSH_NOTIFICATIONS,
   }),
@@ -26,6 +26,14 @@ export async function registerForPush(): Promise<void> {
   }
   try {
     if (Platform.OS !== 'android') return;
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'TripSplit Notifications',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#D4FF00',
+      enableVibrate: true,
+      sound: 'default',
+    });
     const perm = await Notifications.getPermissionsAsync();
     let status = perm.status;
     if (status !== 'granted') status = (await Notifications.requestPermissionsAsync()).status;

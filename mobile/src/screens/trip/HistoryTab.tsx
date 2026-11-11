@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.lineLight,
     padding: space.md,
-    paddingBottom: Platform.OS === 'ios' ? 24 : space.md,
+    paddingBottom: space.md,
     ...shadows.md,
   },
   commentModeRow: {

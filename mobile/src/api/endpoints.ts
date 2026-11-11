@@ -11,6 +11,7 @@ export const auth = {
   logout: (refreshToken: string) => api.post('/auth/logout', { refreshToken }),
   me: () => d<T.User>(api.get('/me')),
   updateProfile: (name: string) => d<T.User>(api.patch('/me', { name })),
+  analytics: (month?: string) => d<T.UserAnalytics>(api.get('/me/analytics', { params: month ? { month } : undefined })),
 };
 
 export const friends = {

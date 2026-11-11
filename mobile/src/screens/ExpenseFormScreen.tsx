@@ -20,6 +20,7 @@ import { invalidateTrip } from '../queries';
 import { colors, radius, shadows, space, type } from '../theme';
 import { isIsoDate, todayIso } from '../utils/format';
 import { formatPaise, parseAmountToPaise, previewShares } from '../utils/money';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Props } from '../navigation/types';
 
 const CATEGORIES: { key: string; label: string; icon: string }[] = [
@@ -33,6 +34,7 @@ const CATEGORIES: { key: string; label: string; icon: string }[] = [
 ];
 
 export default function ExpenseFormScreen({ route, navigation }: Props<'ExpenseForm'>) {
+  const insets = useSafeAreaInsets();
   const { tripId, expense } = route.params;
   const qc = useQueryClient();
   const trip = useQuery({ queryKey: ['trip', tripId], queryFn: () => endpoints.trips.get(tripId) });
@@ -113,7 +115,10 @@ export default function ExpenseFormScreen({ route, navigation }: Props<'ExpenseF
 
   return (
     <ScrollView
-      contentContainerStyle={styles.container}
+      contentContainerStyle={[
+        styles.container,
+        { paddingBottom: Math.max(insets.bottom, 16) + 32 },
+      ]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >

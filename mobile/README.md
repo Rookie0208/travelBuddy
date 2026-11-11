@@ -72,3 +72,6 @@ tokens. The app currently skips push registration on iOS; in-app notifications s
 - One payer per expense. No filters on the expense list yet. No offline mode.
 - Dates are typed as YYYY-MM-DD (a date picker can be added later).
 - Only Expo-managed code; no custom native modules until push is wired up.
+
+## this is how you build the apk file
+- npx eas-cli build -p android --profile preview

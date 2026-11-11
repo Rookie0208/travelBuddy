@@ -16,6 +16,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
     List<Expense> findByTripIdAndDeletedAtIsNullOrderByExpenseDateDescCreatedAtDesc(UUID tripId);
     List<Expense> findByTripIdOrderByExpenseDateAscCreatedAtAsc(UUID tripId);
     List<Expense> findByTripIdAndDeletedAtIsNull(UUID tripId);
+    List<Expense> findByTripIdInAndDeletedAtIsNull(Collection<UUID> tripIds);
     Optional<Expense> findByIdAndTripId(UUID id, UUID tripId);
     Optional<Expense> findByTripIdAndRequestId(UUID tripId, UUID requestId);
     boolean existsByPaidBy(UUID memberId);

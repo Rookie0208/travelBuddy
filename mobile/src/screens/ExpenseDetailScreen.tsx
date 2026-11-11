@@ -16,6 +16,7 @@ import { invalidateTrip } from '../queries';
 import { colors, radius, shadows, space, type } from '../theme';
 import { formatDate } from '../utils/format';
 import { formatPaise } from '../utils/money';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Props } from '../navigation/types';
 import { ActivityRow, CommentBox } from './trip/HistoryTab';
 
@@ -30,6 +31,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 export default function ExpenseDetailScreen({ route, navigation }: Props<'ExpenseDetail'>) {
+  const insets = useSafeAreaInsets();
   const { tripId, expense } = route.params;
   const qc = useQueryClient();
   const trip = useQuery({ queryKey: ['trip', tripId], queryFn: () => endpoints.trips.get(tripId) });
@@ -59,7 +61,7 @@ export default function ExpenseDetailScreen({ route, navigation }: Props<'Expens
     ]);
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { paddingBottom: Math.max(insets.bottom, 12) }]}>
       <FlatList
         data={thread}
         keyExtractor={(a) => a.id}

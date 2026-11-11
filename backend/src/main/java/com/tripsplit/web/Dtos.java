@@ -100,4 +100,26 @@ public final class Dtos {
                                 long myNetPaise, int totalExpensesCount, long averageExpensePaise,
                                 long dailyAveragePaise, Map<String, Long> byCategory, Map<LocalDate, Long> byDay,
                                 List<MemberSpendingDto> memberSpending, List<TopExpenseDto> topExpenses) {}
+
+    // ---- user monthly analytics & archive ----
+    public record UserDayStat(LocalDate date, int dayOfMonth, long personalSharePaise, long groupSpentPaise, int count) {}
+    public record UserCurrentWeekStat(String label, LocalDate startDate, LocalDate endDate,
+                                    long personalSharePaise, long myPaidPaise, long groupSpentPaise,
+                                    long netDuesPaise, int count) {}
+    public record UserCategoryStat(String category, long personalSharePaise, long groupSpentPaise, int count,
+                                  double personalPercentage, double groupPercentage) {}
+    public record UserWeekStat(int weekNumber, String label, LocalDate startDate, LocalDate endDate,
+                              long personalSharePaise, long groupSpentPaise, int count) {}
+    public record UserTripStat(UUID tripId, String tripName, String destination, String currency,
+                              long groupSpentPaise, long personalSharePaise, long myPaidPaise, long netPaise,
+                              int count) {}
+    public record UserExpenseItem(UUID id, UUID tripId, String tripName, String title, String category,
+                                 long amountPaise, long personalSharePaise, String paidByName,
+                                 boolean isPaidByMe, LocalDate date) {}
+    public record UserAnalyticsResponse(String month, long myPersonalSharePaise, long myPaidPaise,
+                                       long groupTotalPaise, long netDuesPaise, int totalExpensesCount,
+                                       int activeTripsCount, UserCurrentWeekStat currentWeek,
+                                       List<UserDayStat> byDay, List<UserWeekStat> byWeek,
+                                       List<UserCategoryStat> byCategory, List<UserTripStat> byTrip,
+                                       List<String> availableMonths, List<UserExpenseItem> expenses) {}
 }

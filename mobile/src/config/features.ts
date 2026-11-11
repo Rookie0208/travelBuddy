@@ -12,6 +12,6 @@ export const FEATURES = {
    *
    * Can also be controlled via EXPO_PUBLIC_ENABLE_PUSH_NOTIFICATIONS in .env
    */
-  ENABLE_PUSH_NOTIFICATIONS: process.env.EXPO_PUBLIC_ENABLE_PUSH_NOTIFICATIONS === 'true',
+  ENABLE_PUSH_NOTIFICATIONS: process.env.EXPO_PUBLIC_ENABLE_PUSH_NOTIFICATIONS !== 'false',
 };
 

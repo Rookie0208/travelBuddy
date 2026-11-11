@@ -21,6 +21,12 @@ public class UserController {
     @GetMapping("/me")
     public UserDto me(@AuthenticationPrincipal UUID userId) { return users.me(userId); }
 
+    @GetMapping("/me/analytics")
+    public UserAnalyticsResponse analytics(@AuthenticationPrincipal UUID userId,
+                                          @RequestParam(required = false) String month) {
+        return users.analytics(userId, month);
+    }
+
     @PatchMapping("/me")
     public UserDto updateMe(@AuthenticationPrincipal UUID userId, @Valid @RequestBody UpdateProfileRequest r) {
         return users.updateProfile(userId, r);

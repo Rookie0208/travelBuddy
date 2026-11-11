@@ -9,9 +9,11 @@ import { Avatar, Button, Card, Chip, ConfirmModal, PromptModal } from '../compon
 import { colors, radius, shadows, space, type } from '../theme';
 import { capitalizeWords } from '../utils/format';
 import { formatPaise } from '../utils/money';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Props } from '../navigation/types';
 
 export default function ProfileScreen({ navigation }: Props<'Profile'>) {
+  const insets = useSafeAreaInsets();
   const { user, updateUser, logout } = useAuth();
   const qc = useQueryClient();
   const tripsQuery = useQuery({ queryKey: ['trips'], queryFn: endpoints.trips.list });
@@ -22,7 +24,6 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
   const [guideOpen, setGuideOpen] = useState(false);
   const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
   const [confirmDeleteText, setConfirmDeleteText] = useState('');
-  const [analyticsModalOpen, setAnalyticsModalOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState('');
 
@@ -92,7 +93,13 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        { paddingBottom: Math.max(insets.bottom, 16) + 32 },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
       {feedback ? (
         <View style={styles.feedbackBanner}>
           <Ionicons name="checkmark-circle" size={18} color={colors.good} />
@@ -231,22 +238,22 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
 
         <View style={styles.divider} />
 
-        {/* Spending Analytics (Upcoming) */}
+        {/* Spending Analytics */}
         <Pressable
           style={({ pressed }) => [styles.navItem, pressed && styles.pressedItem]}
-          onPress={() => setAnalyticsModalOpen(true)}
+          onPress={() => navigation.navigate('SpendingAnalytics', { initialTab: 'month' })}
         >
           <View style={[styles.iconCircle, { backgroundColor: '#F0FDF4' }]}>
             <Ionicons name="pie-chart-outline" size={20} color="#16A34A" />
           </View>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Text style={type.subheading}>Spending Analytics</Text>
-              <View style={styles.comingSoonBadge}>
-                <Text style={styles.comingSoonBadgeText}>COMING SOON</Text>
+              <Text style={type.subheading}>Spending Analytics & Heatmap</Text>
+              <View style={[styles.comingSoonBadge, { backgroundColor: colors.primarySoft, borderColor: colors.primary }]}>
+                <Text style={[styles.comingSoonBadgeText, { color: colors.primaryDark }]}>ANALYTICS</Text>
               </View>
             </View>
-            <Text style={type.small}>Category charts, spending trends & exportable summaries</Text>
+            <Text style={type.small}>Day heatmap, weekly burn, categories & full monthly archive</Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color={colors.subtle} />
         </Pressable>
@@ -477,39 +484,6 @@ export default function ProfileScreen({ navigation }: Props<'Profile'>) {
               </TouchableOpacity>
             </View>
           </ScrollView>
-        </View>
-      </Modal>
-
-      {/* Spending Analytics (Coming Soon) Modal */}
-      <Modal
-        visible={analyticsModalOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setAnalyticsModalOpen(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.promptModalCard}>
-            <View style={[styles.modalIconCircle, { backgroundColor: '#F0FDF4' }]}>
-              <Ionicons name="pie-chart-outline" size={26} color="#16A34A" />
-            </View>
-            <Text style={[type.title, { textAlign: 'center', marginTop: space.sm }]}>
-              Spending Analytics
-            </Text>
-            <Text style={[type.body, { textAlign: 'center', color: colors.muted, marginTop: space.xs, fontSize: 13.5, lineHeight: 19 }]}>
-              We are working on intelligent multi-trip spending breakdowns, category distribution graphs, and debt velocity timelines.
-            </Text>
-            <View style={{ marginTop: space.md, alignItems: 'center' }}>
-              <View style={styles.comingSoonBadgeLarge}>
-                <Text style={styles.comingSoonBadgeLargeText}>COMING SOON IN V2.1</Text>
-              </View>
-            </View>
-            <TouchableOpacity
-              style={[styles.modalBtn, { backgroundColor: colors.primary, marginTop: space.lg, width: '100%', alignItems: 'center' }]}
-              onPress={() => setAnalyticsModalOpen(false)}
-            >
-              <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>Got It</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </Modal>
 

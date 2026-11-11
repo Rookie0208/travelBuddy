@@ -14,6 +14,7 @@ export type RootStackParamList = {
   Join: { code?: string } | undefined;
   Notifications: undefined;
   Profile: undefined;
+  SpendingAnalytics: { initialTab?: 'day' | 'week' | 'month' | 'archive'; month?: string } | undefined;
 };
 
 export type Props<T extends keyof RootStackParamList> = NativeStackScreenProps<RootStackParamList, T>;

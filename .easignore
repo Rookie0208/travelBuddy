@@ -1,0 +1,16 @@
+# Dependencies and generated files
+**/node_modules/
+**/.expo/
+**/dist/
+**/eas-archive/
+**/.env
+**/*.log
+.git/
+
+# Local APK
+TripSplit.apk
+
+# Firebase Admin SDK credentials
+**/travel-x-backend-firebase-adminsdk-fbsvc-edcdb78e81.json
+
+# Firebase client configuration is intentionally included

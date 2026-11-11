@@ -16,6 +16,7 @@ import { errorMessage } from '../api/client';
 import { EmptyState, ErrorState, Loading } from '../components/ui';
 import { colors, radius, shadows, space, type } from '../theme';
 import { formatWhen } from '../utils/format';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Props } from '../navigation/types';
 import type { AppNotification } from '../api/types';
 
@@ -24,49 +25,56 @@ function getNotificationMeta(msg: string, isUnread: boolean): {
   iconColor: string;
   iconBg: string;
   badgeLabel: string;
+  accentColor: string;
 } {
   const lower = msg.toLowerCase();
   if (lower.includes('settled') || lower.includes('repaid') || lower.includes('payment')) {
     return {
       icon: 'checkmark-circle',
-      iconColor: isUnread ? '#10B981' : '#94A3B8',
-      iconBg: isUnread ? '#D1FAE5' : '#F1F5F9',
+      iconColor: isUnread ? '#10B981' : '#059669',
+      iconBg: isUnread ? '#D1FAE5' : '#ECFDF5',
       badgeLabel: 'SETTLEMENT',
+      accentColor: '#10B981',
     };
   }
   if (lower.includes('expense') || lower.includes('added') || lower.includes('spent') || lower.includes('₹') || lower.includes('$')) {
     return {
       icon: 'receipt',
-      iconColor: isUnread ? '#0D382A' : '#94A3B8',
-      iconBg: isUnread ? '#E8F5EF' : '#F1F5F9',
+      iconColor: isUnread ? '#0D382A' : '#15803D',
+      iconBg: isUnread ? '#E8F5EF' : '#F0FDF4',
       badgeLabel: 'EXPENSE',
+      accentColor: '#22C55E',
     };
   }
   if (lower.includes('joined') || lower.includes('request') || lower.includes('member')) {
     return {
       icon: 'person-add',
-      iconColor: isUnread ? '#2563EB' : '#94A3B8',
-      iconBg: isUnread ? '#EFF6FF' : '#F1F5F9',
+      iconColor: isUnread ? '#2563EB' : '#1D4ED8',
+      iconBg: isUnread ? '#EFF6FF' : '#F0F9FF',
       badgeLabel: 'MEMBER',
+      accentColor: '#3B82F6',
     };
   }
   if (lower.includes('comment') || lower.includes('query') || lower.includes('note')) {
     return {
       icon: 'chatbubble-ellipses',
-      iconColor: isUnread ? '#D97706' : '#94A3B8',
-      iconBg: isUnread ? '#FEF3C7' : '#F1F5F9',
+      iconColor: isUnread ? '#D97706' : '#B45309',
+      iconBg: isUnread ? '#FEF3C7' : '#FFFBEB',
       badgeLabel: 'CHAT',
+      accentColor: '#F59E0B',
     };
   }
   return {
     icon: 'notifications',
-    iconColor: isUnread ? colors.primary : '#94A3B8',
-    iconBg: isUnread ? colors.primarySoft : '#F1F5F9',
+    iconColor: isUnread ? colors.primary : colors.primaryLight,
+    iconBg: isUnread ? colors.primarySoft : '#F8FAFC',
     badgeLabel: 'UPDATE',
+    accentColor: colors.primary,
   };
 }
 
 export default function NotificationsScreen({ navigation }: Props<'Notifications'>) {
+  const insets = useSafeAreaInsets();
   const qc = useQueryClient();
   const q = useQuery({ queryKey: ['notifications'], queryFn: endpoints.notifications.list });
 
@@ -91,7 +99,10 @@ export default function NotificationsScreen({ navigation }: Props<'Notifications
       <FlatList
         data={items}
         keyExtractor={(n) => n.id}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingBottom: Math.max(insets.bottom, 16) + 32 },
+        ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -139,7 +150,7 @@ export default function NotificationsScreen({ navigation }: Props<'Notifications
               }}
               style={({ pressed }) => [
                 styles.card,
-                isUnread ? styles.cardUnread : styles.cardRead,
+                isUnread ? styles.cardUnread : [styles.cardRead, { borderLeftColor: meta.accentColor }],
                 pressed && styles.cardPressed,
               ]}
             >
@@ -172,11 +183,11 @@ export default function NotificationsScreen({ navigation }: Props<'Notifications
 
                 {item.tripId ? (
                   <View style={styles.tripLinkRow}>
-                    <Text style={[styles.tripLinkText, !isUnread && { color: colors.muted }]}>Open Trip</Text>
+                    <Text style={[styles.tripLinkText, { color: meta.iconColor }]}>Open Trip</Text>
                     <Ionicons
                       name="arrow-forward"
                       size={13}
-                      color={isUnread ? colors.primary : colors.muted}
+                      color={meta.iconColor}
                     />
                   </View>
                 ) : null}
@@ -272,13 +283,16 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardRead: {
-    backgroundColor: colors.card,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: colors.lineLight,
-    borderLeftWidth: 1,
-    borderLeftColor: colors.lineLight,
-    opacity: 0.88,
-    ...shadows.sm,
+    borderColor: '#E2E8F0',
+    borderLeftWidth: 3.5,
+    borderLeftColor: '#CBD5E1',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
   },
   cardPressed: {
     opacity: 0.92,

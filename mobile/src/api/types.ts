@@ -94,3 +94,83 @@ export interface Stats {
 
 export interface AppNotification { id: string; tripId: string | null; message: string; seen: boolean; createdAt: string }
 export interface NotificationPage { items: AppNotification[]; unread: number; page: number; size: number; total: number }
+
+export interface UserDayStat {
+  date: string;
+  dayOfMonth: number;
+  personalSharePaise: number;
+  groupSpentPaise: number;
+  count: number;
+}
+
+export interface UserCurrentWeekStat {
+  label: string;
+  startDate: string;
+  endDate: string;
+  personalSharePaise: number;
+  myPaidPaise: number;
+  groupSpentPaise: number;
+  netDuesPaise: number;
+  count: number;
+}
+
+export interface UserCategoryStat {
+  category: string;
+  personalSharePaise: number;
+  groupSpentPaise: number;
+  count: number;
+  personalPercentage: number;
+  groupPercentage: number;
+}
+
+export interface UserWeekStat {
+  weekNumber: number;
+  label: string;
+  startDate: string;
+  endDate: string;
+  personalSharePaise: number;
+  groupSpentPaise: number;
+  count: number;
+}
+
+export interface UserTripStat {
+  tripId: string;
+  tripName: string;
+  destination: string;
+  currency: string;
+  groupSpentPaise: number;
+  personalSharePaise: number;
+  myPaidPaise: number;
+  netPaise: number;
+  count: number;
+}
+
+export interface UserExpenseItem {
+  id: string;
+  tripId: string;
+  tripName: string;
+  title: string;
+  category: string;
+  amountPaise: number;
+  personalSharePaise: number;
+  paidByName: string;
+  isPaidByMe: boolean;
+  date: string;
+}
+
+export interface UserAnalytics {
+  month: string;
+  myPersonalSharePaise: number;
+  myPaidPaise: number;
+  groupTotalPaise: number;
+  netDuesPaise: number;
+  totalExpensesCount: number;
+  activeTripsCount: number;
+  currentWeek: UserCurrentWeekStat;
+  byDay: UserDayStat[];
+  byWeek: UserWeekStat[];
+  byCategory: UserCategoryStat[];
+  byTrip: UserTripStat[];
+  availableMonths: string[];
+  expenses: UserExpenseItem[];
+}

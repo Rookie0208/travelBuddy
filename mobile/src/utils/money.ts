@@ -13,7 +13,10 @@ function group(whole: number, indian: boolean): string {
 
 const SYMBOLS: Record<string, string> = { INR: '₹', USD: '$', EUR: '€', GBP: '£' };
 
-export function formatPaise(paise: number, currency = 'INR'): string {
+export function formatPaise(paise: number | null | undefined, currency = 'INR'): string {
+  if (typeof paise !== 'number' || isNaN(paise) || !isFinite(paise)) {
+    paise = 0;
+  }
   const sign = paise < 0 ? '-' : '';
   const abs = Math.abs(paise);
   const whole = Math.floor(abs / 100);
